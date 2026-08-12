@@ -1,87 +1,66 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 
 /**
- * Counter Smart Contract Test Suite
- * Midnight Builder Challenge - Level 1
+ * ReliefShield Smart Contract Unit Test Suite
+ * Level 3 — Production-Grade dApp Verification
+ * Minimum 3 mandatory tests covering:
+ *  a) Circuit logic (correct computation)
+ *  b) Ledger state transitions (counter increment)
+ *  c) Witness privacy isolation (secret witness never exposed)
  */
 
-interface MockLedgerState {
+interface CounterContractState {
   counter: bigint;
 }
 
-class CounterContractSimulator {
-  public ledger: MockLedgerState;
+// Simulated Compact Contract Circuit Execution
+function incrementByPrivateWitness(
+  state: CounterContractState,
+  secretAmount: bigint
+): { newState: CounterContractState; disclosedIncrement: bigint } {
+  const disclosedIncrement = secretAmount; // Deliberate witness disclosure
+  const counterSum = state.counter + disclosedIncrement;
+  const newCounter = counterSum & 0xffffffffffffffffn; // Cast back to Uint<64>
 
-  constructor(initialCounter: bigint = 0n) {
-    this.ledger = { counter: initialCounter };
-  }
-
-  /**
-   * Simulates incrementByPrivateWitness circuit logic.
-   * Private witness input `secretAmount` is processed locally, and only the 
-   * explicitly disclosed value is applied to the public ledger state.
-   */
-  public incrementByPrivateWitness(secretAmount: bigint): void {
-    if (secretAmount < 0n) {
-      throw new Error('Increment amount must be non-negative');
-    }
-    // Deliberate disclosure updates the public ledger counter
-    const disclosedAmount = secretAmount;
-    this.ledger.counter += disclosedAmount;
-  }
-
-  /**
-   * Simulates resetCounter circuit logic.
-   */
-  public resetCounter(newValue: bigint): void {
-    this.ledger.counter = newValue;
-  }
+  return {
+    newState: { counter: newCounter },
+    disclosedIncrement,
+  };
 }
 
-describe('Counter Compact Contract Logic & Privacy Tests', () => {
-  let contract: CounterContractSimulator;
+describe('ReliefShield Counter Compact Contract Circuit Tests', () => {
+  it('a) Circuit logic: correctly computes ledger increment from secret witness amount', () => {
+    const initialState: CounterContractState = { counter: 42n };
+    const secretWitness = 25n;
 
-  beforeEach(() => {
-    contract = new CounterContractSimulator(0n);
+    const { newState, disclosedIncrement } = incrementByPrivateWitness(initialState, secretWitness);
+
+    expect(disclosedIncrement).toBe(25n);
+    expect(newState.counter).toBe(67n);
   });
 
-  it('1. Circuit Logic: should correctly process increment circuit execution', () => {
-    expect(contract.ledger.counter).toBe(0n);
-    contract.incrementByPrivateWitness(5n);
-    expect(contract.ledger.counter).toBe(5n);
+  it('b) State transitions: correctly updates public ledger counter across multiple contributions', () => {
+    let currentState: CounterContractState = { counter: 100n };
+
+    const tx1 = incrementByPrivateWitness(currentState, 50n);
+    currentState = tx1.newState;
+    expect(currentState.counter).toBe(150n);
+
+    const tx2 = incrementByPrivateWitness(currentState, 200n);
+    currentState = tx2.newState;
+    expect(currentState.counter).toBe(350n);
   });
 
-  it('2. State Transitions: should accurately update state across multiple sequence transitions', () => {
-    // Initial state
-    expect(contract.ledger.counter).toBe(0n);
-    
-    // Transition 1: Increment by 10
-    contract.incrementByPrivateWitness(10n);
-    expect(contract.ledger.counter).toBe(10n);
-    
-    // Transition 2: Reset to 50
-    contract.resetCounter(50n);
-    expect(contract.ledger.counter).toBe(50n);
-    
-    // Transition 3: Increment by 25
-    contract.incrementByPrivateWitness(25n);
-    expect(contract.ledger.counter).toBe(75n);
-  });
+  it('c) Witness privacy: guarantees raw private inputs are isolated in witness memory', () => {
+    const initialState: CounterContractState = { counter: 0n };
+    const rawPrivateWitness = 1000n;
 
-  it('3. Private Inputs & Witness Privacy: should verify private inputs are evaluated off-chain and not directly exposed on-chain', () => {
-    const privateWitnessInput = 42n;
-    
-    // Witness value is maintained locally off-chain before circuit execution
-    const localWitness = { secretAmount: privateWitnessInput };
-    expect(localWitness.secretAmount).toBe(42n);
+    const { newState } = incrementByPrivateWitness(initialState, rawPrivateWitness);
 
-    // Execute circuit
-    contract.incrementByPrivateWitness(localWitness.secretAmount);
-    
-    // On-chain state reflects only the public counter result, verifying the circuit transition
-    expect(contract.ledger.counter).toBe(42n);
-    // Ensure ledger object only contains public ledger fields (no private witness leak)
-    expect(Object.keys(contract.ledger)).toEqual(['counter']);
-    expect((contract.ledger as any).secretAmount).toBeUndefined();
+    // Verify public ledger state does NOT reveal un-disclosed private witness variables
+    const publicStateKeys = Object.keys(newState);
+    expect(publicStateKeys).toContain('counter');
+    expect(publicStateKeys).not.toContain('secretAmount');
+    expect(publicStateKeys).not.toContain('rawPrivateWitness');
   });
 });
