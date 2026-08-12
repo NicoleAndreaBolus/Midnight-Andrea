@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useMidnight } from './hooks/useMidnight';
+import { SariPayLanding } from './components/SariPayLanding';
 import { Sidebar } from './layouts/Sidebar';
 import { TopNav } from './layouts/TopNav';
 import { DashboardPage } from './pages/DashboardPage';
@@ -13,8 +14,10 @@ import { CreateRequestModal } from './components/CreateRequestModal';
 import { Toast } from './components/Toast';
 import { ActiveTab, ReliefRequest, NotificationItem } from './types';
 import { mockRequests, mockNotifications } from './data/mockData';
+import { LayoutDashboard, Globe } from 'lucide-react';
 
 export const App: React.FC = () => {
+  const [viewMode, setViewMode] = useState<'landing' | 'saas'>('landing');
   const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [requestsList, setRequestsList] = useState<ReliefRequest[]>(mockRequests);
@@ -60,91 +63,129 @@ export const App: React.FC = () => {
   const unreadNotificationsCount = notificationsList.filter(n => !n.read).length;
 
   return (
-    <div className="min-h-screen bg-surface-bg text-slate-900 font-sans selection:bg-blue-500 selection:text-white">
-      {/* Sidebar Layout */}
-      <Sidebar
-        activeTab={activeTab}
-        setActiveTab={(tab) => {
-          setActiveTab(tab);
-          if (tab !== 'request-detail') setSelectedRequest(null);
-        }}
-        collapsed={sidebarCollapsed}
-        setCollapsed={setSidebarCollapsed}
-        unreadCount={unreadNotificationsCount}
-      />
+    <div>
+      {/* Floating Mode Switcher (Landing Flow vs SaaS Dashboard) */}
+      <div className="fixed bottom-6 left-6 z-50 bg-slate-900/90 backdrop-blur-md p-1.5 rounded-2xl border border-slate-800 shadow-2xl flex items-center gap-1 font-sans text-xs">
+        <button
+          onClick={() => setViewMode('landing')}
+          className={`px-3.5 py-2 rounded-xl font-bold transition-all flex items-center gap-2 ${
+            viewMode === 'landing' ? 'bg-[#059669] text-white shadow-md' : 'text-slate-400 hover:text-white'
+          }`}
+        >
+          <Globe className="w-4 h-4" />
+          <span>Landing Flow</span>
+        </button>
+        <button
+          onClick={() => setViewMode('saas')}
+          className={`px-3.5 py-2 rounded-xl font-bold transition-all flex items-center gap-2 ${
+            viewMode === 'saas' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:text-white'
+          }`}
+        >
+          <LayoutDashboard className="w-4 h-4" />
+          <span>SaaS Admin</span>
+        </button>
+      </div>
 
-      {/* Top Navigation Bar */}
-      <TopNav
-        activeTab={activeTab}
-        sidebarCollapsed={sidebarCollapsed}
-        isConnected={isConnected}
-        walletAddress={walletAddress}
-        network={network}
-        isConnecting={isConnecting}
-        onConnect={connectWallet}
-        onDisconnect={disconnectWallet}
-        onOpenNotifications={() => setActiveTab('notifications')}
-        unreadCount={unreadNotificationsCount}
-      />
+      {viewMode === 'landing' ? (
+        /* SariPay-Inspired Landing Page View Flow */
+        <SariPayLanding
+          isConnected={isConnected}
+          walletAddress={walletAddress}
+          network={network}
+          isConnecting={isConnecting}
+          onConnect={connectWallet}
+          onDisconnect={disconnectWallet}
+          onOpenDashboard={() => setViewMode('saas')}
+          counterState={counterState}
+          isExecutingCircuit={isExecutingCircuit}
+          onExecuteCircuit={executeCircuit}
+        />
+      ) : (
+        /* Enterprise SaaS Admin View */
+        <div className="min-h-screen bg-surface-bg text-slate-900 font-sans selection:bg-blue-500 selection:text-white">
+          <Sidebar
+            activeTab={activeTab}
+            setActiveTab={(tab) => {
+              setActiveTab(tab);
+              if (tab !== 'request-detail') setSelectedRequest(null);
+            }}
+            collapsed={sidebarCollapsed}
+            setCollapsed={setSidebarCollapsed}
+            unreadCount={unreadNotificationsCount}
+          />
 
-      {/* Main SaaS Dashboard Container */}
-      <main
-        className={`pt-20 pb-12 px-6 transition-all duration-300 ${
-          sidebarCollapsed ? 'pl-24' : 'pl-72'
-        }`}
-      >
-        <div className="max-w-7xl mx-auto">
-          {activeTab === 'dashboard' && (
-            <DashboardPage
-              onCreateRequest={() => setIsCreateModalOpen(true)}
-              onViewRequests={() => setActiveTab('requests')}
-              isConnected={isConnected}
-              counterState={counterState}
-              isExecutingCircuit={isExecutingCircuit}
-              lastTxHash={lastTxHash}
-              onExecuteCircuit={executeCircuit}
-            />
-          )}
+          <TopNav
+            activeTab={activeTab}
+            sidebarCollapsed={sidebarCollapsed}
+            isConnected={isConnected}
+            walletAddress={walletAddress}
+            network={network}
+            isConnecting={isConnecting}
+            onConnect={connectWallet}
+            onDisconnect={disconnectWallet}
+            onOpenNotifications={() => setActiveTab('notifications')}
+            unreadCount={unreadNotificationsCount}
+          />
 
-          {activeTab === 'requests' && (
-            <RequestsPage
-              requests={requestsList}
-              onCreateRequest={() => setIsCreateModalOpen(true)}
-              onSelectRequest={(req) => {
-                setSelectedRequest(req);
-                setActiveTab('request-detail');
-              }}
-            />
-          )}
+          <main
+            className={`pt-20 pb-12 px-6 transition-all duration-300 ${
+              sidebarCollapsed ? 'pl-24' : 'pl-72'
+            }`}
+          >
+            <div className="max-w-7xl mx-auto">
+              {activeTab === 'dashboard' && (
+                <DashboardPage
+                  onCreateRequest={() => setIsCreateModalOpen(true)}
+                  onViewRequests={() => setActiveTab('requests')}
+                  isConnected={isConnected}
+                  counterState={counterState}
+                  isExecutingCircuit={isExecutingCircuit}
+                  lastTxHash={lastTxHash}
+                  onExecuteCircuit={executeCircuit}
+                />
+              )}
 
-          {activeTab === 'request-detail' && selectedRequest && (
-            <RequestDetailPage
-              request={selectedRequest}
-              onBack={() => setActiveTab('requests')}
-              onShowToast={showToast}
-            />
-          )}
+              {activeTab === 'requests' && (
+                <RequestsPage
+                  requests={requestsList}
+                  onCreateRequest={() => setIsCreateModalOpen(true)}
+                  onSelectRequest={(req) => {
+                    setSelectedRequest(req);
+                    setActiveTab('request-detail');
+                  }}
+                />
+              )}
 
-          {activeTab === 'organizations' && (
-            <OrganizationsPage />
-          )}
+              {activeTab === 'request-detail' && selectedRequest && (
+                <RequestDetailPage
+                  request={selectedRequest}
+                  onBack={() => setActiveTab('requests')}
+                  onShowToast={showToast}
+                />
+              )}
 
-          {activeTab === 'reports' && (
-            <ReportsPage onShowToast={showToast} />
-          )}
+              {activeTab === 'organizations' && (
+                <OrganizationsPage />
+              )}
 
-          {activeTab === 'notifications' && (
-            <NotificationsPage
-              notifications={notificationsList}
-              onMarkAllAsRead={handleMarkAllNotificationsRead}
-            />
-          )}
+              {activeTab === 'reports' && (
+                <ReportsPage onShowToast={showToast} />
+              )}
 
-          {activeTab === 'settings' && (
-            <SettingsPage onShowToast={showToast} />
-          )}
+              {activeTab === 'notifications' && (
+                <NotificationsPage
+                  notifications={notificationsList}
+                  onMarkAllAsRead={handleMarkAllNotificationsRead}
+                />
+              )}
+
+              {activeTab === 'settings' && (
+                <SettingsPage onShowToast={showToast} />
+              )}
+            </div>
+          </main>
         </div>
-      </main>
+      )}
 
       {/* Reusable Modals & Toasts */}
       <CreateRequestModal
