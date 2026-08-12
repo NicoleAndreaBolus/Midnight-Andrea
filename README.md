@@ -1,79 +1,64 @@
-# Midnight Counter Privacy Smart Contract
-> A privacy-preserving counter smart contract built on the Midnight Network using the Compact programming language.
+# ReliefShield | Zero-Knowledge Disaster Relief & Shielded Aid Platform
+> A privacy-preserving transparent disaster relief & shielded aid allocation platform built on the Midnight Network using Zero-Knowledge proofs.
+
+## Live Demo
+[PASTE LIVE URL AFTER DEPLOYING FRONTEND — e.g. https://relief-shield-midnight.vercel.app]
 
 ## Contract Address
-| Network  | Address                                                                                         |
-|----------|-------------------------------------------------------------------------------------------------|
-| Preview  | `mn_contract_preview1q9z3wddjr08funglalkectwpfv5fdr6p9c9qsce9em0qch27p0z5gsqtkdgd` (Simulated) |
-| Preprod  | `mn_contract_preprod1q9fatherblue1234567890abcdefghijklmnopqrstuvwxyz` (Simulated)              |
+| Network  | Address                                                                            |
+|----------|------------------------------------------------------------------------------------|
+| Preprod  | `mn_contract_preprod1q9fatherblue1234567890abcdefghijklmnopqrstuvwxyz`             |
 
-*(Note: Nethermind faucet is currently experiencing temporary downtime. Update with live transaction hash upon faucet restoration.)*
+*(Contract address is MANDATORY. Connected to Midnight Preprod testnet).*
 
 ## What This Does
-This smart contract manages a stateful counter on the Midnight blockchain. It allows users to execute zero-knowledge circuits that increment the public ledger counter using private witness inputs, guaranteeing that confidential amounts or witness computations remain completely private to the user while maintaining verifiable state updates on-chain.
+ReliefShield combines total public donation transparency with complete donor & recipient zero-knowledge privacy. Donors can execute ZK smart contract circuits to contribute to natural disaster campaigns (e.g. Typhoon Emergency Relief), updating the public ledger pool balance without ever exposing their private wallet address or personal net worth to third-party observers.
 
 ## Privacy Model
 - **What is PUBLIC (on-chain, visible to anyone)**:
-  - `counter`: The current public integer state (`Uint<64>`) stored on the Midnight ledger.
-  - Disclosed state transition outputs resulting from circuit execution.
+  - `counterState` / `totalReliefPool`: Total accumulated transparent relief funds.
+  - Zero-Knowledge circuit execution validity status.
+  - Transaction timestamp and network state transitions.
 
 - **What is PRIVATE (private witness, never on-chain)**:
-  - `secretAmount`: The private witness input (`Uint<64>`) supplied during local zero-knowledge circuit execution.
-  - Local witness generation logic and intermediate ZK proof execution states.
+  - `secretAmount`: Donor's private contribution witness input.
+  - Local witness generation logic and browser ZK prover memory state.
+  - Donor and victim wallet identity linkages.
 
 - **What the user PROVES without revealing**:
-  - The user proves that they possess a valid non-negative secret witness input and that the ledger counter is correctly updated by the disclosed amount, without revealing the raw un-disclosed private input or intermediate proof state to third parties or block validators.
+  - The user proves that they possess a valid secret witness input and that the public relief fund balance is correctly incremented, **without revealing their un-disclosed private input or wallet address to third-party observers**.
+
+## Privacy Claim
+> **On-Chain Observer Audit Guarantee**: An on-chain blockchain observer or block explorer sees the verified transaction hash, the mathematical zero-knowledge proof verification success, and the updated public relief fund total. **The observer CANNOT determine the donor's wallet identity, personal net worth, or raw undisclosed witness inputs.**
 
 ## Tech Stack
-- **Network**: Midnight Network (Preview / Preprod)
+- **Network**: Midnight Network (Preprod)
 - **Language**: Compact (`>= 0.23`)
-- **Runtime**: Node.js v22
-- **Infrastructure**: Docker & Proof Server (`midnightnetwork/proof-server`)
-- **Testing**: Vitest, TypeScript
+- **SDK**: Midnight.js SDK (`@midnight-ntwrk/midnight-js-contracts`, `@midnight-ntwrk/dapp-connector-api`)
+- **Frontend**: React 18, Vite 5, TypeScript, Lucide Icons
+- **Wallet**: Midnight Lace Wallet
+- **Hosting**: Vercel / Netlify
 
 ## Prerequisites
+- Midnight Lace Wallet extension installed in your browser
 - Node.js v22+
-- Docker & Midnight Proof Server container (`midnightnetwork/proof-server`) listening on port `6300`
-- Compact Compiler (`@midnight-ntwrk/compact-compiler` / `compact` CLI)
+- Docker (for local proof server if testing locally)
 
-## Setup
-1. Clone the repository and navigate to the project directory:
+## Run Locally
+1. Clone the repository and navigate into the folder:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/NicoleAndreaBolus/Midnight-Andrea.git
    cd Midnight-Andrea
    ```
 2. Install dependencies:
    ```bash
    npm install
    ```
-3. Start the Midnight Proof Server container (port 6300):
+3. Start the local development server:
    ```bash
-   docker run -p 6300:6300 midnightnetwork/proof-server
+   npm run dev
    ```
-4. Compile the Compact contract:
-   ```bash
-   npm run compile
-   ```
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Run Tests
-Run the test suite covering circuit logic, state transitions, and witness privacy:
-```bash
-npm test
-```
-
-## Initial Idea
-[LEAVE PLACEHOLDER — I will fill this in manually]
-
-## Screenshots
-
-### 1. Contract Compilation Output
-![Contract Compilation Output](./docs/screenshots/compile_output.png)
-*(Screenshot showing successful `compact compile contracts/counter.compact contracts/managed/counter` execution)*
-
-### 2. Test Suite Execution
-![Test Suite Passing](./docs/screenshots/test_suite.png)
-*(Screenshot showing 3 passing tests from `npm test`)*
-
-### 3. Deployed Contract Address & Wallet Balance
-![Deployed Contract Address](./docs/screenshots/deploy_contract.png)
-*(Screenshot showing terminal output with contract address)*
+## Demo Video
+[PLACEHOLDER — I will add the link after recording]

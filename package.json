@@ -1,25 +1,25 @@
 {
-  "name": "midnight-counter",
-  "version": "1.0.0",
+  "name": "relief-shield-midnight",
+  "version": "2.0.0",
   "type": "module",
-  "description": "Midnight Builder Challenge Level 1 - Counter Privacy Smart Contract",
+  "description": "ReliefShield - Zero-Knowledge Disaster Relief & Shielded Aid Platform on Midnight Network",
   "author": "",
   "license": "MIT",
   "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
     "compile": "wsl -d Ubuntu -u root -- bash -c \"export PATH=\\$PATH:/root/.local/bin && cd /mnt/c/Users/kazen/Downloads/Midnight-Andrea && compact compile contracts/counter.compact contracts/managed/counter\"",
-    "build": "npx tsc --noEmit || true",
     "setup": "npx tsx src/setup.ts",
     "deploy": "npx tsx src/deploy.ts",
     "cli": "npx tsx src/cli.ts",
     "check-balance": "npx tsx src/check-balance.ts",
     "network": "npx tsx src/network.ts",
-    "proof-server:start": "docker compose up -d",
-    "proof-server:stop": "docker compose down",
-    "clean": "rm -rf contracts/managed .midnight-state.json .midnight-wallet-state",
     "test": "npx vitest run"
   },
   "dependencies": {
     "@midnight-ntwrk/compact-runtime": "0.16.0",
+    "@midnight-ntwrk/dapp-connector-api": "^4.0.1",
     "@midnight-ntwrk/midnight-js-contracts": "4.1.1",
     "@midnight-ntwrk/midnight-js-http-client-proof-provider": "4.1.1",
     "@midnight-ntwrk/midnight-js-indexer-public-data-provider": "4.1.1",
@@ -31,14 +31,21 @@
     "@midnight-ntwrk/midnight-js-utils": "4.1.1",
     "@midnight-ntwrk/wallet-sdk": "1.2.0",
     "@scure/bip39": "2.2.0",
+    "lucide-react": "^0.344.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "rxjs": "^7.8.2",
     "ws": "^8.21.1"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
     "@types/ws": "^8.18.1",
+    "@vitejs/plugin-react": "^4.3.1",
     "tsx": "^4.23.1",
-    "typescript": "^6.0.3",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.2",
     "vitest": "^1.6.0"
   },
   "engines": {
@@ -49,6 +56,7 @@
     "blockchain",
     "zero-knowledge",
     "privacy",
-    "compact"
+    "disaster-relief",
+    "shielded-donations"
   ]
 }
