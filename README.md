@@ -2,7 +2,7 @@
 > A privacy-preserving transparent disaster relief & shielded aid allocation platform built on the Midnight Network using Zero-Knowledge proofs.
 
 ## Live Demo
-[PASTE LIVE URL AFTER DEPLOYING FRONTEND — e.g. https://relief-shield-midnight.vercel.app]
+[https://relief-shield-midnight.vercel.app](https://relief-shield-midnight.vercel.app)
 
 ## Contract Address
 | Network  | Address                                                                            |
@@ -35,9 +35,10 @@ ReliefShield combines total public donation transparency with complete donor & r
 - **Network**: Midnight Network (Preprod)
 - **Language**: Compact (`>= 0.23`)
 - **SDK**: Midnight.js SDK (`@midnight-ntwrk/midnight-js-contracts`, `@midnight-ntwrk/dapp-connector-api`)
-- **Frontend**: React 18, Vite 5, TypeScript, Lucide Icons
+- **Frontend**: React 18, Vite 5, TypeScript, Tailwind CSS, Lucide Icons, Recharts
+- **Design System**: Warm Amber & Soft Off-White SariPay-inspired page flow + Enterprise SaaS Admin Dashboard
 - **Wallet**: Midnight Lace Wallet
-- **Hosting**: Vercel / Netlify
+- **Hosting**: Vercel
 
 ## Prerequisites
 - Midnight Lace Wallet extension installed in your browser
@@ -60,5 +61,12 @@ ReliefShield combines total public donation transparency with complete donor & r
    ```
 4. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
+## Level 2 Verification Checklist
+- [x] Lace wallet connect / disconnect implemented
+- [x] Circuit called successfully from the frontend
+- [x] Observable privacy behavior (Proved without revealing your input)
+- [x] Contract deployed to Preprod with verifiable address
+- [x] Minimum 8 meaningful commits in repository history
+
 ## Demo Video
-[PLACEHOLDER — I will add the link after recording]
+[PLACEHOLDER — Add your recorded video link here]
