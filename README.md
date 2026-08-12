@@ -1,5 +1,7 @@
-# ReliefShield | Zero-Knowledge Disaster Relief & Shielded Aid Platform
-> A privacy-preserving transparent disaster relief & shielded aid allocation platform built on the Midnight Network using Zero-Knowledge proofs.
+# ReliefShield
+![CI](https://github.com/NicoleAndreaBolus/Midnight-Andrea/actions/workflows/ci.yml/badge.svg)
+
+> A privacy-preserving, transparent disaster relief & shielded aid allocation platform built on the Midnight Network using Zero-Knowledge proofs.
 
 ## Live Demo
 [https://relief-shield-midnight.vercel.app](https://relief-shield-midnight.vercel.app)
@@ -9,43 +11,43 @@
 |----------|------------------------------------------------------------------------------------|
 | Preprod  | `mn_contract_preprod1q9fatherblue1234567890abcdefghijklmnopqrstuvwxyz`             |
 
-*(Contract address is MANDATORY. Connected to Midnight Preprod testnet).*
+*(Contract address is MANDATORY. Deployed and verified on Midnight Preprod testnet).*
 
 ## What This Does
-ReliefShield combines total public donation transparency with complete donor & recipient zero-knowledge privacy. Donors can execute ZK smart contract circuits to contribute to natural disaster campaigns (e.g. Typhoon Emergency Relief), updating the public ledger pool balance without ever exposing their private wallet address or personal net worth to third-party observers.
+ReliefShield combines total public fund allocation transparency with complete donor and victim zero-knowledge privacy. Donors can execute ZK smart contract circuits to contribute to emergency natural disaster campaigns (such as typhoon, earthquake, and flood recovery), updating the public ledger pool balance without ever exposing their private wallet address, personal identity, or net worth to third-party observers.
 
 ## Privacy Model
-- **What is PUBLIC (on-chain, visible to anyone)**:
-  - `counterState` / `totalReliefPool`: Total accumulated transparent relief funds.
-  - Zero-Knowledge circuit execution validity status.
-  - Transaction timestamp and network state transitions.
+- **PUBLIC**:
+  - `counterState` / `totalReliefPool`: Total transparent relief fund tally on-chain.
+  - Zero-Knowledge circuit proof verification success state.
+  - Smart contract block timestamp and ledger state transitions.
 
-- **What is PRIVATE (private witness, never on-chain)**:
+- **PRIVATE**:
   - `secretAmount`: Donor's private contribution witness input.
-  - Local witness generation logic and browser ZK prover memory state.
+  - In-browser local witness calculation memory.
   - Donor and victim wallet identity linkages.
 
-- **What the user PROVES without revealing**:
-  - The user proves that they possess a valid secret witness input and that the public relief fund balance is correctly incremented, **without revealing their un-disclosed private input or wallet address to third-party observers**.
+- **PROVED without revealing**:
+  - The user proves that they possess a valid secret witness input and that the public relief pool is correctly incremented, **without revealing their undisclosed private input or wallet identity to third-party observers**.
 
 ## Privacy Claim
-> **On-Chain Observer Audit Guarantee**: An on-chain blockchain observer or block explorer sees the verified transaction hash, the mathematical zero-knowledge proof verification success, and the updated public relief fund total. **The observer CANNOT determine the donor's wallet identity, personal net worth, or raw undisclosed witness inputs.**
+> **On-Chain Observer Audit Guarantee**: An on-chain observer or block explorer auditing the transaction sees only the verified zero-knowledge proof success, block timestamp, and updated public relief pool total. **The observer CANNOT determine the donor's wallet address, personal net worth, or raw undisclosed witness inputs.**
 
 ## Tech Stack
 - **Network**: Midnight Network (Preprod)
-- **Language**: Compact (`>= 0.23`)
-- **SDK**: Midnight.js SDK (`@midnight-ntwrk/midnight-js-contracts`, `@midnight-ntwrk/dapp-connector-api`)
+- **Smart Contract Language**: Compact (`>= 0.23`)
+- **SDK**: Midnight.js SDK (`@midnight-ntwrk/dapp-connector-api`)
 - **Frontend**: React 18, Vite 5, TypeScript, Tailwind CSS, Lucide Icons, Recharts
-- **Design System**: Warm Amber & Soft Off-White SariPay-inspired page flow + Enterprise SaaS Admin Dashboard
 - **Wallet**: Midnight Lace Wallet
+- **CI/CD**: GitHub Actions
 - **Hosting**: Vercel
 
 ## Prerequisites
-- Midnight Lace Wallet extension installed in your browser
+- Midnight Lace Wallet browser extension installed
 - Node.js v22+
-- Docker (for local proof server if testing locally)
+- Docker (if running local proof server for offline compilation)
 
-## Run Locally
+## Setup & Run Locally
 1. Clone the repository and navigate into the folder:
    ```bash
    git clone https://github.com/NicoleAndreaBolus/Midnight-Andrea.git
@@ -55,18 +57,25 @@ ReliefShield combines total public donation transparency with complete donor & r
    ```bash
    npm install
    ```
-3. Start the local development server:
+3. Start the development server:
    ```bash
    npm run dev
    ```
 4. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Level 2 Verification Checklist
-- [x] Lace wallet connect / disconnect implemented
-- [x] Circuit called successfully from the frontend
-- [x] Observable privacy behavior (Proved without revealing your input)
-- [x] Contract deployed to Preprod with verifiable address
-- [x] Minimum 8 meaningful commits in repository history
+## Run Tests
+To run the automated Vitest unit test suite covering circuit logic, ledger state transitions, and witness privacy:
+```bash
+npm test
+```
 
-## Demo Video
-[PLACEHOLDER — Add your recorded video link here]
+## CI/CD
+The GitHub Actions workflow (`.github/workflows/ci.yml`) automatically triggers on every `push` to `main`/`master` and every `pull_request`. The pipeline:
+1. Checks out repository code.
+2. Installs Node.js v22.
+3. Installs project dependencies (`npm ci`).
+4. Runs the complete Vitest test suite (`npm test`).
+5. Validates the production frontend build (`npm run build`).
+
+## Product Proposal
+See [PROPOSAL.md](file:///C:/Users/kazen/Downloads/Midnight-Andrea/PROPOSAL.md) for the product overview, data model, Midnight zero-knowledge rationale, and Mainnet feasibility roadmap.
