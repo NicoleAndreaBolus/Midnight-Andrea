@@ -36,6 +36,7 @@ export const App: React.FC = () => {
     walletBalance,
     network,
     isConnecting,
+    isLaceInstalled,
     error,
     connectWallet,
     disconnectWallet,
@@ -72,7 +73,7 @@ export const App: React.FC = () => {
         <button
           onClick={() => setViewMode('landing')}
           className={`px-3.5 py-2 rounded-xl font-bold transition-all flex items-center gap-2 ${
-            viewMode === 'landing' ? 'bg-[#ea580c] text-white shadow-md' : 'text-stone-400 hover:text-white'
+            viewMode === 'landing' ? 'bg-[#ea580c] text-[#FAF8F5] shadow-md' : 'text-stone-400 hover:text-white'
           }`}
         >
           <Globe className="w-4 h-4" />
@@ -106,6 +107,7 @@ export const App: React.FC = () => {
           isConnected={isConnected}
           walletAddress={walletAddress}
           walletBalance={walletBalance}
+          isLaceDetected={isLaceInstalled}
           network={network}
           isConnecting={isConnecting}
           onConnect={connectWallet}

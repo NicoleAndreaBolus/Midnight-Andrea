@@ -13,13 +13,15 @@ import {
   TrendingUp, 
   Wallet,
   ArrowLeftRight,
-  Coins
+  Coins,
+  Check
 } from 'lucide-react';
 
 interface ReliefShieldLandingProps {
   isConnected: boolean;
   walletAddress: string | null;
   walletBalance?: number;
+  isLaceDetected?: boolean;
   network: string;
   isConnecting: boolean;
   onConnect: () => void;
@@ -34,7 +36,8 @@ interface ReliefShieldLandingProps {
 export const ReliefShieldLanding: React.FC<ReliefShieldLandingProps> = ({
   isConnected,
   walletAddress,
-  walletBalance = 2450,
+  walletBalance = 1000,
+  isLaceDetected = false,
   network,
   isConnecting,
   onConnect,
@@ -119,9 +122,10 @@ export const ReliefShieldLanding: React.FC<ReliefShieldLandingProps> = ({
               <button
                 onClick={onConnect}
                 disabled={isConnecting}
-                className="hidden sm:inline-flex items-center justify-center text-xs font-bold px-4 py-2.5 rounded-xl border border-[#EFEBE6] bg-white text-[#1C1917] hover:bg-[#F5F2EC] transition-all"
+                className="hidden sm:inline-flex items-center justify-center text-xs font-bold px-4 py-2.5 rounded-xl border border-[#EFEBE6] bg-white text-[#1C1917] hover:bg-[#F5F2EC] transition-all flex items-center gap-1.5"
               >
-                {isConnecting ? 'Connecting...' : 'Connect Lace'}
+                <Wallet className="w-3.5 h-3.5 text-[#ea580c]" />
+                <span>{isConnecting ? 'Connecting...' : isLaceDetected ? 'Connect Lace Extension' : 'Connect Lace'}</span>
               </button>
             )}
 
