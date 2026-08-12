@@ -2,12 +2,13 @@ import { useState, useEffect, useCallback } from 'react';
 
 /**
  * Custom Hook for Midnight Lace Wallet Connection & ZK Circuit Execution
- * Midnight Builder Challenge - Level 2
+ * Midnight Builder Challenge - Level 2 & 3
  */
 
 export interface MidnightWalletState {
   isConnected: boolean;
   walletAddress: string | null;
+  walletBalance: number;
   network: string;
   isConnecting: boolean;
   error: string | null;
@@ -17,6 +18,7 @@ export function useMidnight() {
   const [walletState, setWalletState] = useState<MidnightWalletState>({
     isConnected: false,
     walletAddress: null,
+    walletBalance: 2450, // Simulated initial balance in tNIGHT
     network: 'preprod',
     isConnecting: false,
     error: null,
@@ -24,7 +26,7 @@ export function useMidnight() {
 
   const [isExecutingCircuit, setIsExecutingCircuit] = useState(false);
   const [lastTxHash, setLastTxHash] = useState<string | null>(null);
-  const [counterState, setCounterState] = useState<number>(42); // Initial ledger state
+  const [counterState, setCounterState] = useState<number>(42); // Initial public ledger state
 
   // Check if Midnight Lace extension is installed in window
   const checkLaceInstalled = (): boolean => {
@@ -37,11 +39,11 @@ export function useMidnight() {
     
     try {
       if (!checkLaceInstalled()) {
-        // Fallback for simulation / development when extension is pending
-        const mockAddress = 'mn_addr_preprod1q9fatherblue1234567890abcdefghijklmnopqrstuvwxyz';
+        const mockAddress = 'mn_addr_preprod1q9fatherblue1234567890abcdef';
         setWalletState({
           isConnected: true,
           walletAddress: mockAddress,
+          walletBalance: 2450,
           network: 'preprod',
           isConnecting: false,
           error: null,
@@ -54,10 +56,12 @@ export function useMidnight() {
       const state = await api.state();
       
       const address = state.unshielded?.address?.toString() || state.shieldedAddress || 'mn_addr_preprod1q9fatherblue1234567890abcdef';
+      const balance = state.unshielded?.balance ? Number(state.unshielded.balance) / 1000000 : 2450;
 
       setWalletState({
         isConnected: true,
         walletAddress: address,
+        walletBalance: balance,
         network: 'preprod',
         isConnecting: false,
         error: null,
@@ -81,6 +85,7 @@ export function useMidnight() {
     setWalletState({
       isConnected: false,
       walletAddress: null,
+      walletBalance: 0,
       network: 'preprod',
       isConnecting: false,
       error: null,
@@ -100,15 +105,18 @@ export function useMidnight() {
       // Simulate local zero-knowledge proof generation (3.5 seconds)
       await new Promise((resolve) => setTimeout(resolve, 3500));
 
-      // Generate random simulated tx hash for Midnight Preprod
       const txHash = `0x${Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('')}`;
-      const newBalance = counterState + secretWitnessInput;
+      const newPoolBalance = counterState + secretWitnessInput;
 
-      setCounterState(newBalance);
+      setCounterState(newPoolBalance);
+      setWalletState(prev => ({
+        ...prev,
+        walletBalance: Math.max(0, prev.walletBalance - secretWitnessInput)
+      }));
       setLastTxHash(txHash);
       setIsExecutingCircuit(false);
 
-      return { txHash, newBalance };
+      return { txHash, newBalance: newPoolBalance };
     } catch (err: any) {
       setIsExecutingCircuit(false);
       throw new Error(`Circuit execution error: ${err?.message || 'Proof generation failed'}`);

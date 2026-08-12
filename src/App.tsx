@@ -33,6 +33,7 @@ export const App: React.FC = () => {
   const {
     isConnected,
     walletAddress,
+    walletBalance,
     network,
     isConnecting,
     error,
@@ -104,6 +105,7 @@ export const App: React.FC = () => {
         <ReliefShieldLanding
           isConnected={isConnected}
           walletAddress={walletAddress}
+          walletBalance={walletBalance}
           network={network}
           isConnecting={isConnecting}
           onConnect={connectWallet}
@@ -133,6 +135,7 @@ export const App: React.FC = () => {
             sidebarCollapsed={sidebarCollapsed}
             isConnected={isConnected}
             walletAddress={walletAddress}
+            walletBalance={walletBalance}
             network={network}
             isConnecting={isConnecting}
             onConnect={connectWallet}

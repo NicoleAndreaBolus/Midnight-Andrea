@@ -6,7 +6,8 @@ import {
   Wallet, 
   CheckCircle2, 
   ChevronDown, 
-  ShieldCheck 
+  ShieldCheck,
+  Coins 
 } from 'lucide-react';
 import { ActiveTab } from '../types';
 
@@ -15,6 +16,7 @@ interface TopNavProps {
   sidebarCollapsed: boolean;
   isConnected: boolean;
   walletAddress: string | null;
+  walletBalance?: number;
   network: string;
   isConnecting: boolean;
   onConnect: () => void;
@@ -28,6 +30,7 @@ export const TopNav: React.FC<TopNavProps> = ({
   sidebarCollapsed,
   isConnected,
   walletAddress,
+  walletBalance = 2450,
   network,
   isConnecting,
   onConnect,
@@ -90,9 +93,14 @@ export const TopNav: React.FC<TopNavProps> = ({
           <span>Midnight <strong className="text-[#ea580c]">PREPROD</strong></span>
         </div>
 
-        {/* Wallet Connect Control */}
+        {/* Wallet Connect Control & Account Balance Pill */}
         {isConnected ? (
           <div className="flex items-center gap-2">
+            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 font-mono text-xs font-bold">
+              <Coins className="w-3.5 h-3.5 text-emerald-600" />
+              <span>${walletBalance.toLocaleString()} tNIGHT</span>
+            </div>
+
             <div className="px-3 py-1.5 rounded-xl bg-amber-100/80 border border-amber-200 text-xs font-mono font-semibold text-amber-950 flex items-center gap-1.5">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
               <span>{truncatedAddress}</span>

@@ -12,12 +12,14 @@ import {
   EyeOff, 
   TrendingUp, 
   Wallet,
-  ArrowLeftRight
+  ArrowLeftRight,
+  Coins
 } from 'lucide-react';
 
 interface ReliefShieldLandingProps {
   isConnected: boolean;
   walletAddress: string | null;
+  walletBalance?: number;
   network: string;
   isConnecting: boolean;
   onConnect: () => void;
@@ -32,6 +34,7 @@ interface ReliefShieldLandingProps {
 export const ReliefShieldLanding: React.FC<ReliefShieldLandingProps> = ({
   isConnected,
   walletAddress,
+  walletBalance = 2450,
   network,
   isConnecting,
   onConnect,
@@ -91,11 +94,20 @@ export const ReliefShieldLanding: React.FC<ReliefShieldLandingProps> = ({
               <span>Donate / Receive via QR</span>
             </button>
 
+            {/* Wallet Connection Status & Balance Display */}
             {isConnected ? (
               <div className="flex items-center gap-2">
+                {/* Account Balance Pill */}
+                <div className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 font-mono text-xs font-bold">
+                  <Coins className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>${walletBalance.toLocaleString()} tNIGHT</span>
+                </div>
+
+                {/* Wallet Address Snippet */}
                 <span className="text-xs font-mono font-semibold px-3 py-1.5 rounded-xl bg-amber-100/80 text-amber-900 border border-amber-200">
                   {truncatedAddress}
                 </span>
+
                 <button
                   onClick={onDisconnect}
                   className="text-xs font-semibold text-[#78716C] hover:text-rose-600 px-2 py-1"
@@ -210,7 +222,11 @@ export const ReliefShieldLanding: React.FC<ReliefShieldLandingProps> = ({
               <form onSubmit={handleCircuitSubmit} className="bg-white p-5 rounded-xl border border-[#EFEBE6] shadow-sm space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="text-xs font-bold text-[#1C1917]">Shielded Contribution (tNIGHT)</span>
-                  <span className="text-[10px] text-[#78716C] font-mono">Proved without revealing input</span>
+                  {isConnected && (
+                    <span className="text-[10px] text-emerald-700 font-mono font-bold">
+                      Bal: ${walletBalance.toLocaleString()} tNIGHT
+                    </span>
+                  )}
                 </div>
 
                 <div className="relative">
