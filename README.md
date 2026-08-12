@@ -4,7 +4,7 @@
 > A privacy-preserving, transparent disaster relief & shielded aid allocation platform built on the Midnight Network using Zero-Knowledge proofs.
 
 ## Live Demo
-[https://relief-shield-midnight.vercel.app](https://relief-shield-midnight.vercel.app)
+[https://relief-shield.vercel.app/](https://relief-shield.vercel.app/)
 
 ## Contract Address
 | Network  | Address                                                                            |
