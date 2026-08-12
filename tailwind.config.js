@@ -7,13 +7,25 @@ export default {
   theme: {
     extend: {
       colors: {
+        navy: {
+          900: '#172554',
+          950: '#0f172a',
+        },
         brand: {
-          50: '#fff7ed',
-          100: '#ffedd5',
-          500: '#f97316',
-          600: '#ea580c',
-          700: '#c2410c',
+          50: '#eff6ff',
+          100: '#dbeafe',
+          500: '#3b82f6',
+          600: '#2563eb',
+          700: '#1d4ed8',
+        },
+        surface: {
+          bg: '#f8fafc',
+          card: '#ffffff',
+          border: '#e2e8f0',
         }
+      },
+      fontFamily: {
+        sans: ['Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'],
       }
     },
   },
