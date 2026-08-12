@@ -11,10 +11,11 @@ import { ReportsPage } from './pages/ReportsPage';
 import { NotificationsPage } from './pages/NotificationsPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { CreateRequestModal } from './components/CreateRequestModal';
+import { TransactionModal } from './components/TransactionModal';
 import { Toast } from './components/Toast';
 import { ActiveTab, ReliefRequest, NotificationItem } from './types';
 import { mockRequests, mockNotifications } from './data/mockData';
-import { LayoutDashboard, Globe } from 'lucide-react';
+import { LayoutDashboard, Globe, ArrowLeftRight } from 'lucide-react';
 
 export const App: React.FC = () => {
   const [viewMode, setViewMode] = useState<'landing' | 'saas'>('landing');
@@ -25,6 +26,7 @@ export const App: React.FC = () => {
   const [notificationsList, setNotificationsList] = useState<NotificationItem[]>(mockNotifications);
   
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isTxModalOpen, setIsTxModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Midnight Lace Wallet & ZK Circuit Hook
@@ -64,25 +66,36 @@ export const App: React.FC = () => {
 
   return (
     <div>
-      {/* Floating Mode Switcher (Landing Flow vs SaaS Dashboard) */}
-      <div className="fixed bottom-6 left-6 z-50 bg-slate-900/90 backdrop-blur-md p-1.5 rounded-2xl border border-slate-800 shadow-2xl flex items-center gap-1 font-sans text-xs">
+      {/* Floating Controls: Mode Switcher & Quick Transaction Hub */}
+      <div className="fixed bottom-6 left-6 z-50 bg-[#1C1917]/90 backdrop-blur-md p-1.5 rounded-2xl border border-stone-800 shadow-2xl flex items-center gap-1.5 font-sans text-xs">
         <button
           onClick={() => setViewMode('landing')}
           className={`px-3.5 py-2 rounded-xl font-bold transition-all flex items-center gap-2 ${
-            viewMode === 'landing' ? 'bg-[#ea580c] text-white shadow-md' : 'text-slate-400 hover:text-white'
+            viewMode === 'landing' ? 'bg-[#ea580c] text-white shadow-md' : 'text-stone-400 hover:text-white'
           }`}
         >
           <Globe className="w-4 h-4" />
           <span>Landing Flow</span>
         </button>
+        
         <button
           onClick={() => setViewMode('saas')}
           className={`px-3.5 py-2 rounded-xl font-bold transition-all flex items-center gap-2 ${
-            viewMode === 'saas' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:text-white'
+            viewMode === 'saas' ? 'bg-blue-600 text-white shadow-md' : 'text-stone-400 hover:text-white'
           }`}
         >
           <LayoutDashboard className="w-4 h-4" />
           <span>SaaS Admin</span>
+        </button>
+
+        <div className="h-5 w-px bg-stone-800 mx-1" />
+
+        <button
+          onClick={() => setIsTxModalOpen(true)}
+          className="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold flex items-center gap-2 shadow-md transition-all active:scale-95"
+        >
+          <ArrowLeftRight className="w-4 h-4" />
+          <span>Donate / Receive via QR</span>
         </button>
       </div>
 
@@ -96,6 +109,7 @@ export const App: React.FC = () => {
           onConnect={connectWallet}
           onDisconnect={disconnectWallet}
           onOpenDashboard={() => setViewMode('saas')}
+          onOpenTxModal={() => setIsTxModalOpen(true)}
           counterState={counterState}
           isExecutingCircuit={isExecutingCircuit}
           onExecuteCircuit={executeCircuit}
@@ -186,6 +200,17 @@ export const App: React.FC = () => {
           </main>
         </div>
       )}
+
+      {/* Transaction Hub Modal (Donate or Receive via QR) */}
+      <TransactionModal
+        isOpen={isTxModalOpen}
+        onClose={() => setIsTxModalOpen(false)}
+        isConnected={isConnected}
+        onConnect={connectWallet}
+        counterState={counterState}
+        isExecutingCircuit={isExecutingCircuit}
+        onExecuteCircuit={executeCircuit}
+      />
 
       {/* Reusable Modals & Toasts */}
       <CreateRequestModal

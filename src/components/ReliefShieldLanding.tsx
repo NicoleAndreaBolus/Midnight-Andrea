@@ -11,7 +11,8 @@ import {
   Heart, 
   EyeOff, 
   TrendingUp, 
-  Wallet
+  Wallet,
+  ArrowLeftRight
 } from 'lucide-react';
 
 interface ReliefShieldLandingProps {
@@ -22,6 +23,7 @@ interface ReliefShieldLandingProps {
   onConnect: () => void;
   onDisconnect: () => void;
   onOpenDashboard: () => void;
+  onOpenTxModal: () => void;
   counterState: number;
   isExecutingCircuit: boolean;
   onExecuteCircuit: (amount: number) => Promise<{ txHash: string; newBalance: number }>;
@@ -35,6 +37,7 @@ export const ReliefShieldLanding: React.FC<ReliefShieldLandingProps> = ({
   onConnect,
   onDisconnect,
   onOpenDashboard,
+  onOpenTxModal,
   counterState,
   isExecutingCircuit,
   onExecuteCircuit,
@@ -80,6 +83,14 @@ export const ReliefShieldLanding: React.FC<ReliefShieldLandingProps> = ({
           </div>
 
           <div className="flex items-center gap-3">
+            <button
+              onClick={onOpenTxModal}
+              className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-100/90 text-amber-950 font-bold text-xs border border-amber-300/60 hover:bg-amber-200/80 transition-all"
+            >
+              <ArrowLeftRight className="w-3.5 h-3.5 text-[#ea580c]" />
+              <span>Donate / Receive via QR</span>
+            </button>
+
             {isConnected ? (
               <div className="flex items-center gap-2">
                 <span className="text-xs font-mono font-semibold px-3 py-1.5 rounded-xl bg-amber-100/80 text-amber-900 border border-amber-200">
@@ -136,11 +147,11 @@ export const ReliefShieldLanding: React.FC<ReliefShieldLandingProps> = ({
 
           <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
             <button
-              onClick={onConnect}
+              onClick={onOpenTxModal}
               className="px-8 py-3.5 bg-gradient-to-r from-[#ea580c] to-[#d97706] hover:brightness-110 text-white text-sm font-extrabold rounded-xl shadow-lg shadow-[#ea580c]/25 flex items-center justify-center gap-2.5 transition-all"
             >
-              <span>{isConnected ? 'Wallet Connected ✓' : 'Connect Lace Wallet to Contribute'}</span>
-              <ArrowRight className="w-4 h-4" />
+              <ArrowLeftRight className="w-4 h-4" />
+              <span>Start Transaction (Donate or Receive via QR)</span>
             </button>
             <button
               onClick={onOpenDashboard}
@@ -237,7 +248,7 @@ export const ReliefShieldLanding: React.FC<ReliefShieldLandingProps> = ({
             </div>
           </div>
 
-          <div className="absolute bottom-[-24px] right-[-10px] md:right-[-20px] w-[190px] bg-white rounded-3xl border-4 border-[#1C1917] shadow-2xl overflow-hidden hidden sm:block animate-float">
+          <div className="absolute bottom-[-24px] right-[-10px] md:right-[-20px] w-[190px] bg-white rounded-3xl border-4 border-[#1C1917] shadow-2xl overflow-hidden hidden sm:block animate-float cursor-pointer" onClick={onOpenTxModal}>
             <div className="bg-[#1C1917] h-4 w-28 mx-auto rounded-b-xl flex justify-center items-center">
               <span className="w-1.5 h-1.5 rounded-full bg-stone-600" />
             </div>
@@ -251,7 +262,7 @@ export const ReliefShieldLanding: React.FC<ReliefShieldLandingProps> = ({
                 <div className="w-20 h-20 my-2 bg-white border border-[#EFEBE6] p-1.5 rounded-lg flex items-center justify-center">
                   <QrCode className="w-full h-full text-[#1C1917]" />
                 </div>
-                <span className="text-[8px] text-[#78716C]">Show to Field Officer</span>
+                <span className="text-[8px] text-[#78716C]">Click to Claim Aid via QR</span>
               </div>
               <div className="bg-amber-100/80 rounded-lg p-1.5 border border-amber-300/60 text-center">
                 <p className="text-[9px] font-bold text-amber-900">ZK Proof Verified</p>
