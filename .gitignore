@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Compact build outputs (optional to ignore or commit per project preference; managed/ is generated)
+# contracts/managed/
+
+# Local Midnight state & wallet secrets
+.midnight-state.json
+.midnight-wallet-state
+.midnight-seed
+
+# Logs & Temporary files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.local
+.env.*.local
