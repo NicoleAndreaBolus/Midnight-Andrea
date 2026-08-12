@@ -46,28 +46,30 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <aside
-      className={`fixed top-0 left-0 bottom-0 z-40 bg-navy-900 border-r border-slate-800 text-slate-300 transition-all duration-300 flex flex-col justify-between ${
+      className={`fixed top-0 left-0 bottom-0 z-40 bg-white border-r border-[#EFEBE6] text-[#1C1917] transition-all duration-300 flex flex-col justify-between shadow-sm ${
         collapsed ? 'w-20' : 'w-64'
       }`}
     >
       {/* Top App Branding */}
       <div>
-        <div className="h-16 px-4 flex items-center justify-between border-b border-slate-800/80">
+        <div className="h-20 px-5 flex items-center justify-between border-b border-[#EFEBE6]">
           <div className="flex items-center gap-3 overflow-hidden">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shrink-0 shadow-md shadow-blue-500/20">
-              <Shield className="w-5 h-5 text-white" />
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#f59e0b] via-[#ea580c] to-[#d97706] p-0.5 shadow-md shadow-[#ea580c]/20 shrink-0">
+              <div className="w-full h-full bg-[#FAF8F5] rounded-[14px] flex items-center justify-center">
+                <Shield className="w-5 h-5 text-[#d97706]" />
+              </div>
             </div>
             {!collapsed && (
               <div className="whitespace-nowrap">
-                <span className="font-extrabold text-base text-white tracking-tight">ReliefShield</span>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-blue-400 block -mt-1">SaaS Admin</span>
+                <span className="font-extrabold text-lg text-[#1C1917] tracking-tight">Relief<span className="text-[#ea580c]">Shield</span></span>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#ea580c] block -mt-1">SaaS Admin</span>
               </div>
             )}
           </div>
 
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="w-7 h-7 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition-all shrink-0"
+            className="w-7 h-7 rounded-lg bg-[#FAF8F5] hover:bg-stone-200/60 text-stone-500 hover:text-stone-900 flex items-center justify-center transition-all shrink-0 border border-[#EFEBE6]"
             title={collapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
           >
             {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
@@ -83,20 +85,20 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id as ActiveTab)}
-                className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-semibold text-xs transition-all relative group ${
+                className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-xs transition-all relative group ${
                   isActive
-                    ? 'bg-blue-600 text-white shadow-md shadow-blue-600/25'
-                    : 'text-slate-400 hover:bg-slate-800/60 hover:text-slate-100'
+                    ? 'bg-[#ea580c] text-white shadow-md shadow-[#ea580c]/25'
+                    : 'text-[#78716C] hover:bg-[#FAF8F5] hover:text-[#1C1917]'
                 }`}
                 title={collapsed ? item.label : undefined}
               >
-                <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-200'}`} />
+                <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-white' : 'text-[#78716C] group-hover:text-[#1C1917]'}`} />
                 {!collapsed && <span className="truncate">{item.label}</span>}
                 
                 {item.badge && (
                   <span
                     className={`ml-auto font-mono text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                      isActive ? 'bg-white text-blue-600' : 'bg-blue-600 text-white'
+                      isActive ? 'bg-white text-[#ea580c]' : 'bg-[#ea580c] text-white'
                     }`}
                   >
                     {item.badge}
@@ -109,17 +111,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Bottom User Profile Section */}
-      <div className="p-3 border-t border-slate-800/80">
-        <div className="flex items-center gap-3 p-2 rounded-xl bg-slate-800/40 border border-slate-800">
+      <div className="p-3 border-t border-[#EFEBE6]">
+        <div className="flex items-center gap-3 p-2 rounded-xl bg-[#FAF8F5] border border-[#EFEBE6]">
           <img
             src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
             alt="User Avatar"
-            className="w-9 h-9 rounded-xl object-cover border border-slate-700 shrink-0"
+            className="w-9 h-9 rounded-xl object-cover border border-[#EFEBE6] shrink-0"
           />
           {!collapsed && (
             <div className="overflow-hidden">
-              <p className="text-xs font-bold text-slate-100 truncate">John Doe</p>
-              <p className="text-[11px] text-slate-400 truncate">Platform Administrator</p>
+              <p className="text-xs font-bold text-[#1C1917] truncate">John Doe</p>
+              <p className="text-[11px] text-[#78716C] truncate">Platform Administrator</p>
             </div>
           )}
         </div>
