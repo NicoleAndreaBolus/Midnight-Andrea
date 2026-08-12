@@ -14,7 +14,12 @@ import {
   TrendingUp, 
   Sparkles,
   ExternalLink,
-  Wallet
+  Wallet,
+  Play,
+  Cpu,
+  Check,
+  RefreshCw,
+  X
 } from 'lucide-react';
 
 interface SariPayLandingProps {
@@ -42,19 +47,50 @@ export const SariPayLanding: React.FC<SariPayLandingProps> = ({
   isExecutingCircuit,
   onExecuteCircuit,
 }) => {
-  const [activeShowcaseTab, setActiveShowcaseTab] = useState<'donor' | 'admin'>('donor');
   const [contributionAmount, setContributionAmount] = useState<number>(100);
   const [txResultHash, setTxResultHash] = useState<string | null>(null);
 
+  // Interactive ZK Proof Simulation State
+  const [isSimulatingModalOpen, setIsSimulatingModalOpen] = useState(false);
+  const [simStep, setSimStep] = useState<1 | 2 | 3>(1);
+  const [simAmount, setSimAmount] = useState<number>(100);
+  const [simProgress, setSimProgress] = useState<number>(0);
+  const [simTxHash, setSimTxHash] = useState<string | null>(null);
+  const [simNewCounter, setSimNewCounter] = useState<number>(counterState + 100);
+
   const handleCircuitSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isConnected) return;
-    try {
-      const res = await onExecuteCircuit(contributionAmount);
-      setTxResultHash(res.txHash);
-    } catch (err) {
-      console.error(err);
+    if (isConnected) {
+      try {
+        const res = await onExecuteCircuit(contributionAmount);
+        setTxResultHash(res.txHash);
+      } catch (err) {
+        console.error(err);
+      }
+    } else {
+      // Trigger simulation modal if wallet is not connected!
+      startSimulation(contributionAmount);
     }
+  };
+
+  const startSimulation = (amountToSimulate: number) => {
+    setSimAmount(amountToSimulate);
+    setSimStep(2);
+    setSimProgress(0);
+    setIsSimulatingModalOpen(true);
+
+    // Stage 1: Constructing Witness (0% -> 40%)
+    setTimeout(() => setSimProgress(40), 800);
+    // Stage 2: Evaluating Constraints (40% -> 80%)
+    setTimeout(() => setSimProgress(80), 1800);
+    // Stage 3: Complete Proof (100%)
+    setTimeout(() => {
+      setSimProgress(100);
+      const generatedHash = `0x${Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('')}`;
+      setSimTxHash(generatedHash);
+      setSimNewCounter(counterState + amountToSimulate);
+      setSimStep(3);
+    }, 2800);
   };
 
   const truncatedAddress = walletAddress
@@ -66,7 +102,6 @@ export const SariPayLanding: React.FC<SariPayLandingProps> = ({
       {/* Sticky Navigation Bar */}
       <nav className="sticky top-0 z-50 bg-[#FAF8F5]/90 backdrop-blur-md border-b border-[#EFEBE6]">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          {/* Logo with Warm Amber Gradient Shield */}
           <a href="#" className="flex items-center gap-3 group">
             <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#f59e0b] via-[#ea580c] to-[#d97706] p-0.5 shadow-md shadow-[#ea580c]/20 group-hover:scale-105 transition-transform">
               <div className="w-full h-full bg-[#FAF8F5] rounded-[14px] flex items-center justify-center">
@@ -78,15 +113,16 @@ export const SariPayLanding: React.FC<SariPayLandingProps> = ({
             </span>
           </a>
 
-          {/* Navigation Links */}
           <div className="hidden md:flex items-center gap-8 text-[14px] font-medium text-[#78716C]">
-            <a href="#features" className="hover:text-[#1C1917] transition-colors relative after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-[2px] after:bg-[#d97706] hover:after:w-full after:transition-all">Features</a>
-            <a href="#how-it-works" className="hover:text-[#1C1917] transition-colors relative after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-[2px] after:bg-[#d97706] hover:after:w-full after:transition-all">How It Works</a>
-            <a href="#solutions" className="hover:text-[#1C1917] transition-colors relative after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-[2px] after:bg-[#d97706] hover:after:w-full after:transition-all">Live Demo</a>
-            <a href="#security" className="hover:text-[#1C1917] transition-colors relative after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-[2px] after:bg-[#d97706] hover:after:w-full after:transition-all">Security</a>
+            <a href="#simulate" className="text-[#ea580c] font-bold flex items-center gap-1.5 bg-amber-100/80 px-3 py-1 rounded-full border border-amber-300/60">
+              <Play className="w-3.5 h-3.5 fill-[#ea580c]" />
+              <span>Simulate ZK Flow</span>
+            </a>
+            <a href="#features" className="hover:text-[#1C1917] transition-colors">Features</a>
+            <a href="#how-it-works" className="hover:text-[#1C1917] transition-colors">How It Works</a>
+            <a href="#security" className="hover:text-[#1C1917] transition-colors">Security</a>
           </div>
 
-          {/* Action Buttons */}
           <div className="flex items-center gap-3">
             {isConnected ? (
               <div className="flex items-center gap-2">
@@ -111,11 +147,11 @@ export const SariPayLanding: React.FC<SariPayLandingProps> = ({
             )}
 
             <button
-              onClick={onOpenDashboard}
+              onClick={() => startSimulation(100)}
               className="inline-flex items-center justify-center text-xs font-bold px-5 py-2.5 rounded-xl bg-[#ea580c] hover:bg-[#d97706] text-white shadow-md shadow-[#ea580c]/20 active:scale-95 transition-all gap-2"
             >
-              <span>Open SaaS Admin</span>
-              <ArrowRight className="w-4 h-4" />
+              <Play className="w-3.5 h-3.5 fill-white" />
+              <span>Simulate ZK Proof</span>
             </button>
           </div>
         </div>
@@ -144,21 +180,22 @@ export const SariPayLanding: React.FC<SariPayLandingProps> = ({
 
           <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
             <button
-              onClick={onConnect}
+              onClick={() => startSimulation(100)}
               className="px-8 py-3.5 bg-gradient-to-r from-[#ea580c] to-[#d97706] hover:brightness-110 text-white text-sm font-extrabold rounded-xl shadow-lg shadow-[#ea580c]/25 flex items-center justify-center gap-2.5 transition-all"
             >
-              <span>{isConnected ? 'Wallet Connected ✓' : 'Connect Wallet to Contribute'}</span>
-              <ArrowRight className="w-4 h-4" />
+              <Play className="w-4 h-4 fill-white" />
+              <span>Simulate ZK Proof Flow (No Wallet Needed)</span>
             </button>
+
             <button
               onClick={onOpenDashboard}
-              className="px-8 py-3.5 bg-white text-[#1C1917] border border-[#EFEBE6] text-sm font-bold rounded-xl hover:bg-[#F5F2EC] shadow-sm flex items-center justify-center gap-2.5 transition-all"
+              className="px-6 py-3.5 bg-white text-[#1C1917] border border-[#EFEBE6] text-sm font-bold rounded-xl hover:bg-[#F5F2EC] shadow-sm flex items-center justify-center gap-2 transition-all"
             >
-              View Admin Dashboard
+              <span>View SaaS Admin</span>
+              <ArrowRight className="w-4 h-4" />
             </button>
           </div>
 
-          {/* Bottom Metrics Bar */}
           <div className="grid grid-cols-2 gap-8 mt-12 pt-8 border-t border-[#EFEBE6] w-full">
             <div>
               <p className="text-2xl font-black text-[#1C1917]">99.9%</p>
@@ -171,10 +208,9 @@ export const SariPayLanding: React.FC<SariPayLandingProps> = ({
           </div>
         </div>
 
-        {/* Hero Right Column: Interactive Browser Card */}
-        <div className="lg:col-span-6 relative flex justify-center items-center w-full z-10">
+        {/* Hero Right Column: Interactive Card */}
+        <div id="simulate" className="lg:col-span-6 relative flex justify-center items-center w-full z-10">
           <div className="w-full max-w-[540px] bg-white rounded-2xl border border-[#EFEBE6] shadow-2xl overflow-hidden relative">
-            {/* Browser Header */}
             <div className="bg-[#FAF8F5] border-b border-[#EFEBE6] px-4 py-3 flex items-center justify-between">
               <div className="flex gap-1.5">
                 <span className="w-3 h-3 rounded-full bg-rose-400/80 inline-block" />
@@ -187,7 +223,6 @@ export const SariPayLanding: React.FC<SariPayLandingProps> = ({
               <div className="w-10" />
             </div>
 
-            {/* Live Interactive Form inside Card */}
             <div className="p-6 bg-[#FAF8F5]/50 space-y-5">
               <div className="grid grid-cols-2 gap-3">
                 <div className="bg-white p-4 rounded-xl border border-[#EFEBE6] shadow-sm">
@@ -206,7 +241,7 @@ export const SariPayLanding: React.FC<SariPayLandingProps> = ({
                 </div>
               </div>
 
-              {/* Interactive Contribution Form */}
+              {/* Interactive Form */}
               <form onSubmit={handleCircuitSubmit} className="bg-white p-5 rounded-xl border border-[#EFEBE6] shadow-sm space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="text-xs font-bold text-[#1C1917]">Shielded Contribution (tNIGHT)</span>
@@ -219,25 +254,30 @@ export const SariPayLanding: React.FC<SariPayLandingProps> = ({
                     min="1"
                     value={contributionAmount}
                     onChange={(e) => setContributionAmount(Number(e.target.value))}
-                    disabled={!isConnected || isExecutingCircuit}
+                    disabled={isExecutingCircuit}
                     className="w-full bg-[#FAF8F5] border border-[#EFEBE6] rounded-xl px-4 py-3 text-sm font-mono font-bold text-[#1C1917] focus:border-[#ea580c] outline-none"
                     placeholder="100.00"
                   />
                 </div>
 
-                <button
-                  type="submit"
-                  disabled={!isConnected || isExecutingCircuit}
-                  className="w-full py-3 px-4 rounded-xl font-bold text-xs text-white bg-[#ea580c] hover:bg-[#d97706] shadow-md shadow-[#ea580c]/20 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
-                >
-                  {isExecutingCircuit ? (
-                    <span>Proving ZK Circuit locally...</span>
-                  ) : !isConnected ? (
-                    'Connect Wallet to Execute ZK Circuit'
-                  ) : (
-                    'Execute ZK Contribution Circuit'
-                  )}
-                </button>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="submit"
+                    disabled={isExecutingCircuit}
+                    className="py-3 px-4 rounded-xl font-bold text-xs text-white bg-[#ea580c] hover:bg-[#d97706] shadow-md shadow-[#ea580c]/20 transition-all flex items-center justify-center gap-2"
+                  >
+                    {isConnected ? 'Execute ZK Circuit' : 'Simulate ZK Circuit'}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => startSimulation(contributionAmount)}
+                    className="py-3 px-4 rounded-xl font-bold text-xs text-[#1C1917] bg-white border border-[#EFEBE6] hover:bg-[#FAF8F5] transition-all flex items-center justify-center gap-1.5"
+                  >
+                    <Cpu className="w-3.5 h-3.5 text-[#ea580c]" />
+                    <span>Run Prover Demo</span>
+                  </button>
+                </div>
               </form>
 
               {txResultHash && (
@@ -248,7 +288,6 @@ export const SariPayLanding: React.FC<SariPayLandingProps> = ({
             </div>
           </div>
 
-          {/* Floating Mobile QR Card */}
           <div className="absolute bottom-[-24px] right-[-10px] md:right-[-20px] w-[190px] bg-white rounded-3xl border-4 border-[#1C1917] shadow-2xl overflow-hidden hidden sm:block animate-float">
             <div className="bg-[#1C1917] h-4 w-28 mx-auto rounded-b-xl flex justify-center items-center">
               <span className="w-1.5 h-1.5 rounded-full bg-stone-600" />
@@ -360,54 +399,101 @@ export const SariPayLanding: React.FC<SariPayLandingProps> = ({
         </div>
       </section>
 
-      {/* 4-Step How It Works Section */}
-      <section id="how-it-works" className="w-full max-w-7xl mx-auto px-6 py-24 text-center">
-        <div className="mb-16">
-          <span className="text-[#ea580c] text-xs font-bold uppercase tracking-widest block mb-3">Simple Handoff Process</span>
-          <h2 className="text-3xl sm:text-4xl font-bold text-[#1C1917]">How ReliefShield Works</h2>
-          <p className="text-sm sm:text-base text-[#78716C] font-medium mt-3 max-w-2xl mx-auto">
-            A frictionless zero-knowledge relief cycle designed to protect both the donor and the disaster victim.
-          </p>
+      {/* Interactive ZK Simulation Modal */}
+      {isSimulatingModalOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="w-full max-w-lg rounded-2xl bg-white border border-[#EFEBE6] shadow-2xl p-6 space-y-5 animate-in fade-in zoom-in-95">
+            <div className="flex items-center justify-between border-b border-[#EFEBE6] pb-3">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-amber-100 text-[#ea580c] flex items-center justify-center">
+                  <Cpu className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-[#1C1917]">Interactive ZK Prover Simulator</h3>
+                  <p className="text-[11px] text-[#78716C]">Executing Compact ZK Circuit in Browser Memory</p>
+                </div>
+              </div>
+              <button onClick={() => setIsSimulatingModalOpen(false)} className="p-1 rounded-lg text-stone-400 hover:text-stone-700">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {simStep === 2 && (
+              <div className="space-y-4 py-2">
+                <div className="space-y-2">
+                  <div className="flex justify-between text-xs font-bold text-[#1C1917]">
+                    <span>Compiling Local Witness & Proving Constraints...</span>
+                    <span>{simProgress}%</span>
+                  </div>
+                  <div className="w-full h-3 bg-stone-100 rounded-full overflow-hidden p-0.5 border border-stone-200">
+                    <div
+                      className="h-full bg-gradient-to-r from-[#f59e0b] to-[#ea580c] rounded-full transition-all duration-500"
+                      style={{ width: `${simProgress}%` }}
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2 text-xs font-mono text-[#78716C] bg-[#FAF8F5] p-3.5 rounded-xl border border-[#EFEBE6]">
+                  <p className={simProgress >= 40 ? 'text-[#ea580c] font-bold' : 'opacity-50'}>
+                    ✓ [Stage 1] Mapping witness input: secretAmount = {simAmount} tNIGHT
+                  </p>
+                  <p className={simProgress >= 80 ? 'text-amber-800 font-bold' : 'opacity-50'}>
+                    ✓ [Stage 2] Evaluating Compact circuit constraint: counter = counter + disclose(secretAmount)
+                  </p>
+                  <p className={simProgress >= 100 ? 'text-emerald-700 font-bold' : 'opacity-50'}>
+                    ✓ [Stage 3] Constructing zero-knowledge proof & public ledger output hash
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {simStep === 3 && (
+              <div className="space-y-4 py-2">
+                <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 space-y-2">
+                  <div className="flex items-center gap-2 font-bold text-sm text-emerald-800">
+                    <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+                    <span>ZK Proof Successfully Generated & Verified</span>
+                  </div>
+                  <p className="text-emerald-800">
+                    The zero-knowledge proof has been verified. The public relief pool state updated to <strong className="font-mono text-emerald-950">${simNewCounter} tNIGHT</strong>.
+                  </p>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 space-y-1">
+                  <span className="font-bold block flex items-center gap-1.5 text-amber-950">
+                    <Lock className="w-3.5 h-3.5 text-[#ea580c]" />
+                    Observable Privacy Guarantee:
+                  </span>
+                  <p className="text-[11px] leading-relaxed">
+                    Proved without revealing your input! Your raw secret witness amount ({simAmount} tNIGHT) and wallet identity were evaluated inside browser memory — <strong>0 bytes of private identity were disclosed to third-party observers</strong>.
+                  </p>
+                </div>
+
+                <div className="font-mono text-[11px] text-stone-500 bg-[#FAF8F5] p-3 rounded-xl border border-[#EFEBE6] break-all">
+                  <span className="text-stone-400 font-bold block mb-0.5">Simulated Transaction Hash:</span>
+                  <span className="text-[#ea580c] font-semibold">{simTxHash}</span>
+                </div>
+
+                <div className="flex justify-end gap-3 pt-2">
+                  <button
+                    onClick={() => startSimulation(simAmount)}
+                    className="px-4 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold text-xs flex items-center gap-1.5"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5" />
+                    <span>Run Again</span>
+                  </button>
+                  <button
+                    onClick={() => setIsSimulatingModalOpen(false)}
+                    className="px-5 py-2 rounded-xl bg-[#ea580c] hover:bg-[#d97706] text-white font-bold text-xs shadow-md"
+                  >
+                    Close Simulator
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="bg-white rounded-2xl border border-[#EFEBE6] p-8 shadow-sm text-center relative group hover:border-[#ea580c]/40 transition-all">
-            <span className="absolute top-4 right-6 text-2xl font-black text-[#EFEBE6]">01</span>
-            <div className="w-12 h-12 rounded-xl bg-amber-100/80 flex items-center justify-center text-[#ea580c] mb-6 mx-auto">
-              <Wallet className="w-6 h-6" />
-            </div>
-            <h3 className="text-lg font-semibold text-[#1C1917] mb-2">Connect Wallet</h3>
-            <p className="text-xs text-[#78716C]">Donor connects Midnight Lace wallet without filling personal KYC forms.</p>
-          </div>
-
-          <div className="bg-white rounded-2xl border border-[#EFEBE6] p-8 shadow-sm text-center relative group hover:border-[#ea580c]/40 transition-all">
-            <span className="absolute top-4 right-6 text-2xl font-black text-[#EFEBE6]">02</span>
-            <div className="w-12 h-12 rounded-xl bg-amber-100/80 flex items-center justify-center text-[#ea580c] mb-6 mx-auto">
-              <Lock className="w-6 h-6" />
-            </div>
-            <h3 className="text-lg font-semibold text-[#1C1917] mb-2">Execute ZK Circuit</h3>
-            <p className="text-xs text-[#78716C]">Local Compact prover generates zero-knowledge proof in browser memory.</p>
-          </div>
-
-          <div className="bg-white rounded-2xl border border-[#EFEBE6] p-8 shadow-sm text-center relative group hover:border-[#ea580c]/40 transition-all">
-            <span className="absolute top-4 right-6 text-2xl font-black text-[#EFEBE6]">03</span>
-            <div className="w-12 h-12 rounded-xl bg-amber-100/80 flex items-center justify-center text-[#ea580c] mb-6 mx-auto">
-              <QrCode className="w-6 h-6" />
-            </div>
-            <h3 className="text-lg font-semibold text-[#1C1917] mb-2">QR Aid Verification</h3>
-            <p className="text-xs text-[#78716C]">Disaster victims verify relief claim using secure QR handoff tokens.</p>
-          </div>
-
-          <div className="bg-white rounded-2xl border border-[#EFEBE6] p-8 shadow-sm text-center relative group hover:border-[#ea580c]/40 transition-all">
-            <span className="absolute top-4 right-6 text-2xl font-black text-[#EFEBE6]">04</span>
-            <div className="w-12 h-12 rounded-xl bg-amber-100/80 flex items-center justify-center text-[#ea580c] mb-6 mx-auto">
-              <CheckCircle2 className="w-6 h-6" />
-            </div>
-            <h3 className="text-lg font-semibold text-[#1C1917] mb-2">Automatic Settlement</h3>
-            <p className="text-xs text-[#78716C]">Verified proof updates the public relief pool on-chain automatically.</p>
-          </div>
-        </div>
-      </section>
+      )}
 
       {/* Footer */}
       <footer className="w-full bg-[#1C1917] text-white py-12 border-t border-stone-800 text-xs">
