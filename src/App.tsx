@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useMidnight } from './hooks/useMidnight';
-import { SariPayLanding } from './components/SariPayLanding';
+import { ReliefShieldLanding } from './components/ReliefShieldLanding';
 import { Sidebar } from './layouts/Sidebar';
 import { TopNav } from './layouts/TopNav';
 import { DashboardPage } from './pages/DashboardPage';
@@ -69,7 +69,7 @@ export const App: React.FC = () => {
         <button
           onClick={() => setViewMode('landing')}
           className={`px-3.5 py-2 rounded-xl font-bold transition-all flex items-center gap-2 ${
-            viewMode === 'landing' ? 'bg-[#059669] text-white shadow-md' : 'text-slate-400 hover:text-white'
+            viewMode === 'landing' ? 'bg-[#ea580c] text-white shadow-md' : 'text-slate-400 hover:text-white'
           }`}
         >
           <Globe className="w-4 h-4" />
@@ -87,8 +87,8 @@ export const App: React.FC = () => {
       </div>
 
       {viewMode === 'landing' ? (
-        /* SariPay-Inspired Landing Page View Flow */
-        <SariPayLanding
+        /* ReliefShield Landing Page View */
+        <ReliefShieldLanding
           isConnected={isConnected}
           walletAddress={walletAddress}
           network={network}

@@ -22,7 +22,7 @@ import {
   X
 } from 'lucide-react';
 
-interface SariPayLandingProps {
+interface ReliefShieldLandingProps {
   isConnected: boolean;
   walletAddress: string | null;
   network: string;
@@ -35,7 +35,7 @@ interface SariPayLandingProps {
   onExecuteCircuit: (amount: number) => Promise<{ txHash: string; newBalance: number }>;
 }
 
-export const SariPayLanding: React.FC<SariPayLandingProps> = ({
+export const ReliefShieldLanding: React.FC<ReliefShieldLandingProps> = ({
   isConnected,
   walletAddress,
   network,
@@ -68,7 +68,6 @@ export const SariPayLanding: React.FC<SariPayLandingProps> = ({
         console.error(err);
       }
     } else {
-      // Trigger simulation modal if wallet is not connected!
       startSimulation(contributionAmount);
     }
   };
@@ -79,11 +78,8 @@ export const SariPayLanding: React.FC<SariPayLandingProps> = ({
     setSimProgress(0);
     setIsSimulatingModalOpen(true);
 
-    // Stage 1: Constructing Witness (0% -> 40%)
     setTimeout(() => setSimProgress(40), 800);
-    // Stage 2: Evaluating Constraints (40% -> 80%)
     setTimeout(() => setSimProgress(80), 1800);
-    // Stage 3: Complete Proof (100%)
     setTimeout(() => {
       setSimProgress(100);
       const generatedHash = `0x${Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('')}`;
@@ -208,7 +204,7 @@ export const SariPayLanding: React.FC<SariPayLandingProps> = ({
           </div>
         </div>
 
-        {/* Hero Right Column: Interactive Card */}
+        {/* Hero Right Column */}
         <div id="simulate" className="lg:col-span-6 relative flex justify-center items-center w-full z-10">
           <div className="w-full max-w-[540px] bg-white rounded-2xl border border-[#EFEBE6] shadow-2xl overflow-hidden relative">
             <div className="bg-[#FAF8F5] border-b border-[#EFEBE6] px-4 py-3 flex items-center justify-between">
@@ -399,6 +395,55 @@ export const SariPayLanding: React.FC<SariPayLandingProps> = ({
         </div>
       </section>
 
+      {/* 4-Step How It Works Section */}
+      <section id="how-it-works" className="w-full max-w-7xl mx-auto px-6 py-24 text-center">
+        <div className="mb-16">
+          <span className="text-[#ea580c] text-xs font-bold uppercase tracking-widest block mb-3">Simple Handoff Process</span>
+          <h2 className="text-3xl sm:text-4xl font-bold text-[#1C1917]">How ReliefShield Works</h2>
+          <p className="text-sm sm:text-base text-[#78716C] font-medium mt-3 max-w-2xl mx-auto">
+            A frictionless zero-knowledge relief cycle designed to protect both the donor and the disaster victim.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="bg-white rounded-2xl border border-[#EFEBE6] p-8 shadow-sm text-center relative group hover:border-[#ea580c]/40 transition-all">
+            <span className="absolute top-4 right-6 text-2xl font-black text-[#EFEBE6]">01</span>
+            <div className="w-12 h-12 rounded-xl bg-amber-100/80 flex items-center justify-center text-[#ea580c] mb-6 mx-auto">
+              <Wallet className="w-6 h-6" />
+            </div>
+            <h3 className="text-lg font-semibold text-[#1C1917] mb-2">Connect Wallet</h3>
+            <p className="text-xs text-[#78716C]">Donor connects Midnight Lace wallet without filling personal KYC forms.</p>
+          </div>
+
+          <div className="bg-white rounded-2xl border border-[#EFEBE6] p-8 shadow-sm text-center relative group hover:border-[#ea580c]/40 transition-all">
+            <span className="absolute top-4 right-6 text-2xl font-black text-[#EFEBE6]">02</span>
+            <div className="w-12 h-12 rounded-xl bg-amber-100/80 flex items-center justify-center text-[#ea580c] mb-6 mx-auto">
+              <Lock className="w-6 h-6" />
+            </div>
+            <h3 className="text-lg font-semibold text-[#1C1917] mb-2">Execute ZK Circuit</h3>
+            <p className="text-xs text-[#78716C]">Local Compact prover generates zero-knowledge proof in browser memory.</p>
+          </div>
+
+          <div className="bg-white rounded-2xl border border-[#EFEBE6] p-8 shadow-sm text-center relative group hover:border-[#ea580c]/40 transition-all">
+            <span className="absolute top-4 right-6 text-2xl font-black text-[#EFEBE6]">03</span>
+            <div className="w-12 h-12 rounded-xl bg-amber-100/80 flex items-center justify-center text-[#ea580c] mb-6 mx-auto">
+              <QrCode className="w-6 h-6" />
+            </div>
+            <h3 className="text-lg font-semibold text-[#1C1917] mb-2">QR Aid Verification</h3>
+            <p className="text-xs text-[#78716C]">Disaster victims verify relief claim using secure QR handoff tokens.</p>
+          </div>
+
+          <div className="bg-white rounded-2xl border border-[#EFEBE6] p-8 shadow-sm text-center relative group hover:border-[#ea580c]/40 transition-all">
+            <span className="absolute top-4 right-6 text-2xl font-black text-[#EFEBE6]">04</span>
+            <div className="w-12 h-12 rounded-xl bg-amber-100/80 flex items-center justify-center text-[#ea580c] mb-6 mx-auto">
+              <CheckCircle2 className="w-6 h-6" />
+            </div>
+            <h3 className="text-lg font-semibold text-[#1C1917] mb-2">Automatic Settlement</h3>
+            <p className="text-xs text-[#78716C]">Verified proof updates the public relief pool on-chain automatically.</p>
+          </div>
+        </div>
+      </section>
+
       {/* Interactive ZK Simulation Modal */}
       {isSimulatingModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-4">
@@ -506,7 +551,7 @@ export const SariPayLanding: React.FC<SariPayLandingProps> = ({
           </div>
 
           <p className="text-stone-400">
-            © 2026 ReliefShield — Midnight Builder Challenge Level 2 Project
+            © 2026 ReliefShield — Midnight Builder Challenge Project
           </p>
 
           <div className="flex items-center gap-6 font-medium text-stone-300">
