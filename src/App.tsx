@@ -41,6 +41,9 @@ export const App: React.FC = () => {
     connectWallet,
     disconnectWallet,
     executeCircuit,
+    deployContractToPreprod,
+    isDeployingContract,
+    deployedContractAddress,
     isExecutingCircuit,
     lastTxHash,
     counterState,
@@ -161,6 +164,9 @@ export const App: React.FC = () => {
                   isExecutingCircuit={isExecutingCircuit}
                   lastTxHash={lastTxHash}
                   onExecuteCircuit={executeCircuit}
+                  onDeployContract={deployContractToPreprod}
+                  isDeployingContract={isDeployingContract}
+                  deployedContractAddress={deployedContractAddress}
                 />
               )}
 
