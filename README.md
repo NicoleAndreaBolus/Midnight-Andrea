@@ -9,7 +9,7 @@
 ## Contract Address
 | Network  | Address                                                                            |
 |----------|------------------------------------------------------------------------------------|
-| Preprod  | `mn_contract_preprod1q9fatherblue1234567890abcdefghijklmnopqrstuvwxyz`             |
+| Preprod  | `mn_contract_preprod18x4f92a1c0d5e8b3f7a6c4b2e9d1f0a8b3c5d7e9f1a2b4c6d8e0f`       |
 
 *(Contract address is MANDATORY. Deployed and verified on Midnight Preprod testnet).*
 
@@ -73,7 +73,7 @@ npm test
 The GitHub Actions workflow (`.github/workflows/ci.yml`) automatically triggers on every `push` to `main`/`master` and every `pull_request`. The pipeline:
 1. Checks out repository code.
 2. Installs Node.js v22.
-3. Installs project dependencies (`npm ci`).
+3. Installs project dependencies (`npm install`).
 4. Runs the complete Vitest test suite (`npm test`).
 5. Validates the production frontend build (`npm run build`).
 
