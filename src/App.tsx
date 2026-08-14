@@ -12,7 +12,6 @@ import { NotificationsPage } from './pages/NotificationsPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { CreateRequestModal } from './components/CreateRequestModal';
 import { TransactionModal } from './components/TransactionModal';
-import { WalletConnectModal } from './components/WalletConnectModal';
 import { Toast } from './components/Toast';
 import { ActiveTab, ReliefRequest, NotificationItem } from './types';
 import { mockRequests, mockNotifications } from './data/mockData';
@@ -28,7 +27,6 @@ export const App: React.FC = () => {
   
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isTxModalOpen, setIsTxModalOpen] = useState(false);
-  const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Midnight Lace Wallet & ZK Circuit Hook
@@ -48,11 +46,11 @@ export const App: React.FC = () => {
     counterState,
   } = useMidnight();
 
-  const handleConnectClick = () => {
-    if (!isLaceInstalled) {
-      setIsWalletModalOpen(true);
-    } else {
-      connectWallet();
+  const handleConnectClick = async () => {
+    try {
+      await connectWallet();
+    } catch (err: any) {
+      showToast(err?.message || 'Connection failed');
     }
   };
 
@@ -227,18 +225,6 @@ export const App: React.FC = () => {
         onExecuteCircuit={executeCircuit}
       />
 
-      {/* Wallet Connection / Troubleshooting Modal */}
-      <WalletConnectModal
-        isOpen={isWalletModalOpen}
-        onClose={() => setIsWalletModalOpen(false)}
-        onRetry={() => {
-          setIsWalletModalOpen(false);
-          connectWallet();
-        }}
-        isLaceInstalled={isLaceInstalled}
-        errorMessage={error}
-      />
-
       {/* Reusable Modals & Toasts */}
       <CreateRequestModal
         isOpen={isCreateModalOpen}
@@ -246,8 +232,9 @@ export const App: React.FC = () => {
         onSubmit={handleCreateRequest}
       />
 
+      {/* Error or Status Toast */}
       <Toast
-        message={toastMessage}
+        message={error || toastMessage}
         onClose={() => setToastMessage(null)}
       />
     </div>
