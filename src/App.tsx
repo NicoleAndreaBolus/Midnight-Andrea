@@ -12,6 +12,7 @@ import { NotificationsPage } from './pages/NotificationsPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { CreateRequestModal } from './components/CreateRequestModal';
 import { TransactionModal } from './components/TransactionModal';
+import { WalletConnectModal } from './components/WalletConnectModal';
 import { Toast } from './components/Toast';
 import { ActiveTab, ReliefRequest, NotificationItem } from './types';
 import { mockRequests, mockNotifications } from './data/mockData';
@@ -27,6 +28,7 @@ export const App: React.FC = () => {
   
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isTxModalOpen, setIsTxModalOpen] = useState(false);
+  const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Midnight Lace Wallet & ZK Circuit Hook
@@ -41,13 +43,18 @@ export const App: React.FC = () => {
     connectWallet,
     disconnectWallet,
     executeCircuit,
-    deployContractToPreprod,
-    isDeployingContract,
-    deployedContractAddress,
     isExecutingCircuit,
     lastTxHash,
     counterState,
   } = useMidnight();
+
+  const handleConnectClick = () => {
+    if (!isLaceInstalled) {
+      setIsWalletModalOpen(true);
+    } else {
+      connectWallet();
+    }
+  };
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -113,7 +120,7 @@ export const App: React.FC = () => {
           isLaceDetected={isLaceInstalled}
           network={network}
           isConnecting={isConnecting}
-          onConnect={connectWallet}
+          onConnect={handleConnectClick}
           onDisconnect={disconnectWallet}
           onOpenDashboard={() => setViewMode('saas')}
           onOpenTxModal={() => setIsTxModalOpen(true)}
@@ -143,7 +150,7 @@ export const App: React.FC = () => {
             walletBalance={walletBalance}
             network={network}
             isConnecting={isConnecting}
-            onConnect={connectWallet}
+            onConnect={handleConnectClick}
             onDisconnect={disconnectWallet}
             onOpenNotifications={() => setActiveTab('notifications')}
             unreadCount={unreadNotificationsCount}
@@ -164,9 +171,6 @@ export const App: React.FC = () => {
                   isExecutingCircuit={isExecutingCircuit}
                   lastTxHash={lastTxHash}
                   onExecuteCircuit={executeCircuit}
-                  onDeployContract={deployContractToPreprod}
-                  isDeployingContract={isDeployingContract}
-                  deployedContractAddress={deployedContractAddress}
                 />
               )}
 
@@ -217,10 +221,22 @@ export const App: React.FC = () => {
         isOpen={isTxModalOpen}
         onClose={() => setIsTxModalOpen(false)}
         isConnected={isConnected}
-        onConnect={connectWallet}
+        onConnect={handleConnectClick}
         counterState={counterState}
         isExecutingCircuit={isExecutingCircuit}
         onExecuteCircuit={executeCircuit}
+      />
+
+      {/* Wallet Connection / Troubleshooting Modal */}
+      <WalletConnectModal
+        isOpen={isWalletModalOpen}
+        onClose={() => setIsWalletModalOpen(false)}
+        onRetry={() => {
+          setIsWalletModalOpen(false);
+          connectWallet();
+        }}
+        isLaceInstalled={isLaceInstalled}
+        errorMessage={error}
       />
 
       {/* Reusable Modals & Toasts */}
