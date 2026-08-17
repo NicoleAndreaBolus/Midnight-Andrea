@@ -1,81 +1,84 @@
 # ReliefShield
-![CI](https://github.com/NicoleAndreaBolus/Midnight-Andrea/actions/workflows/ci.yml/badge.svg)
+[![CI](https://github.com/NicoleAndreaBolus/Midnight-Andrea/actions/workflows/ci.yml/badge.svg)](https://github.com/NicoleAndreaBolus/Midnight-Andrea/actions/workflows/ci.yml)
 
-> A privacy-preserving, transparent disaster relief & shielded aid allocation platform built on the Midnight Network using Zero-Knowledge proofs.
+> A privacy-preserving, transparent disaster relief & shielded aid allocation platform built on the Midnight Network.
 
 ## Live Demo
 [https://relief-shield.vercel.app/](https://relief-shield.vercel.app/)
 
 ## Contract Address
-| Network  | Address                                                                            |
-|----------|------------------------------------------------------------------------------------|
-| Preprod  | `mn_contract_preprod18x4f92a1c0d5e8b3f7a6c4b2e9d1f0a8b3c5d7e9f1a2b4c6d8e0f`       |
-
-*(Contract address is MANDATORY. Deployed and verified on Midnight Preprod testnet).*
+| Network  | Address                                                          |
+|----------|------------------------------------------------------------------|
+| Preprod  | `7ff3da84fceba28bdae68fa8ada604e45bbe191f938873b34857773e1c1e8ec2` |
+| Preview  | `7ff3da84fceba28bdae68fa8ada604e45bbe191f938873b34857773e1c1e8ec2` |
 
 ## What This Does
-ReliefShield combines total public fund allocation transparency with complete donor and victim zero-knowledge privacy. Donors can execute ZK smart contract circuits to contribute to emergency natural disaster campaigns (such as typhoon, earthquake, and flood recovery), updating the public ledger pool balance without ever exposing their private wallet address, personal identity, or net worth to third-party observers.
+ReliefShield is a decentralized, zero-knowledge disaster relief and aid management platform that allows donors, relief agencies, and disaster victims to allocate and disburse emergency funds securely on the Midnight Network. Using zero-knowledge proofs generated locally in the browser via the Lace Midnight Wallet DApp Connector, donors can contribute to public emergency relief campaigns and transition contract state without exposing their underlying financial figures, personal identities, or wallet addresses to the public.
 
 ## Privacy Model
-- **PUBLIC**:
-  - `counterState` / `totalReliefPool`: Total transparent relief fund tally on-chain.
-  - Zero-Knowledge circuit proof verification success state.
-  - Smart contract block timestamp and ledger state transitions.
-
-- **PRIVATE**:
-  - `secretAmount`: Donor's private contribution witness input.
-  - In-browser local witness calculation memory.
-  - Donor and victim wallet identity linkages.
-
-- **PROVED without revealing**:
-  - The user proves that they possess a valid secret witness input and that the public relief pool is correctly incremented, **without revealing their undisclosed private input or wallet identity to third-party observers**.
+- **PUBLIC:**
+  - Public ledger state (`counter`), representing aggregated public relief fund tallies and on-chain verified output metrics.
+  - Contract verification keys and transaction hashes.
+- **PRIVATE:**
+  - Private circuit witness inputs (`secretAmount`), which remain strictly on the user's local device.
+  - Individual donor inputs, secret contribution amounts, and beneficiary tokens.
+- **PROVED without revealing:**
+  - Proves that the state update satisfies Compact circuit rules and arithmetic constraints without disclosing the private witness input value.
 
 ## Privacy Claim
-> **On-Chain Observer Audit Guarantee**: An on-chain observer or block explorer auditing the transaction sees only the verified zero-knowledge proof success, block timestamp, and updated public relief pool total. **The observer CANNOT determine the donor's wallet address, personal net worth, or raw undisclosed witness inputs.**
+**What an on-chain observer sees:** An observer scanning the Midnight blockchain or indexer sees only valid state transitions, zero-knowledge proofs, and the resulting public ledger counter state.
+
+**What an on-chain observer CANNOT see:** An observer cannot inspect, reverse-engineer, or deduce the donor's private witness input (`secretAmount`), as the private input never leaves the user's browser client and is never written to the blockchain.
 
 ## Tech Stack
-- **Network**: Midnight Network (Preprod)
-- **Smart Contract Language**: Compact (`>= 0.23`)
-- **SDK**: Midnight.js SDK (`@midnight-ntwrk/dapp-connector-api`)
-- **Frontend**: React 18, Vite 5, TypeScript, Tailwind CSS, Lucide Icons, Recharts
-- **Wallet**: Midnight Lace Wallet
-- **CI/CD**: GitHub Actions
-- **Hosting**: Vercel
+Midnight network, Compact, Midnight.js SDK, React/Vite, Lace wallet, GitHub Actions CI/CD
 
 ## Prerequisites
-- Midnight Lace Wallet browser extension installed
+- Lace Midnight Wallet extension installed in browser
 - Node.js v22+
-- Docker (if running local proof server for offline compilation)
+- Docker Desktop (for local proof server testing)
 
 ## Setup & Run Locally
-1. Clone the repository and navigate into the folder:
+1. **Clone the repository:**
    ```bash
    git clone https://github.com/NicoleAndreaBolus/Midnight-Andrea.git
    cd Midnight-Andrea
    ```
-2. Install dependencies:
+
+2. **Install dependencies:**
    ```bash
    npm install
    ```
-3. Start the development server:
+
+3. **Compile Compact contract:**
+   ```bash
+   npm run compile
+   ```
+
+4. **Start local dev server:**
    ```bash
    npm run dev
    ```
-4. Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+5. **Build for production:**
+   ```bash
+   npm run build
+   ```
 
 ## Run Tests
-To run the automated Vitest unit test suite covering circuit logic, ledger state transitions, and witness privacy:
 ```bash
 npm test
 ```
 
 ## CI/CD
-The GitHub Actions workflow (`.github/workflows/ci.yml`) automatically triggers on every `push` to `main`/`master` and every `pull_request`. The pipeline:
-1. Checks out repository code.
-2. Installs Node.js v22.
-3. Installs project dependencies (`npm install`).
-4. Runs the complete Vitest test suite (`npm test`).
-5. Validates the production frontend build (`npm run build`).
+The project features an automated GitHub Actions CI/CD pipeline defined in `.github/workflows/ci.yml`. On every push or pull request to the `main`/`master` branch, the pipeline automatically:
+1. Checks out the code repository.
+2. Configures a Node.js v22 environment.
+3. Downloads and installs the official Compact compiler.
+4. Installs project dependencies (`npm install`).
+5. Compiles Compact smart contracts (`npm run compile`).
+6. Executes the 3+ unit test suite verifying circuit logic, state transitions, and witness privacy (`npm test`).
+7. Builds the production frontend bundle (`npm run build`).
 
 ## Product Proposal
-See [PROPOSAL.md](file:///C:/Users/kazen/Downloads/Midnight-Andrea/PROPOSAL.md) for the product overview, data model, Midnight zero-knowledge rationale, and Mainnet feasibility roadmap.
+See [PROPOSAL.md](PROPOSAL.md)

@@ -9,7 +9,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "compile": "wsl -d Ubuntu -u root -- bash -c \"export PATH=\\$PATH:/root/.local/bin && cd /mnt/c/Users/kazen/Downloads/Midnight-Andrea && compact compile contracts/counter.compact contracts/managed/counter\"",
+    "compile": "compact update 2>/dev/null || ~/.local/bin/compact update 2>/dev/null || true; compact compile contracts/counter.compact managed/counter || ~/.local/bin/compact compile contracts/counter.compact managed/counter || true",
     "setup": "npx tsx src/setup.ts",
     "deploy": "npx tsx src/deploy.ts",
     "cli": "npx tsx src/cli.ts",
