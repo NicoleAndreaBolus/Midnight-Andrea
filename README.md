@@ -16,6 +16,12 @@
 | Preprod  | `7ff3da84fceba28bdae68fa8ada604e45bbe191f938873b34857773e1c1e8ec2` |
 | Preview  | `7ff3da84fceba28bdae68fa8ada604e45bbe191f938873b34857773e1c1e8ec2` |
 
+## Level 5 — User Validation
+- Target: 50 Preprod users
+- Current: 50 / 50 verified Preprod testnet users
+- See [USERS.md](USERS.md) for verified wallet addresses
+- See [docs/FEEDBACK.md](docs/FEEDBACK.md) for user feedback logs and iterative improvements
+
 ## What This Product Does
 ReliefShield is a decentralized, zero-knowledge smart contract application that solves the transparency-privacy dilemma in humanitarian aid and emergency disaster relief. During major natural disasters (typhoons, floods, earthquakes), donors want absolute mathematical assurance that emergency funds are collected and accounted for, while disaster victims and donors require complete financial and personal privacy against malicious actors and public surveillance.
 
