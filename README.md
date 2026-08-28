@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/logo.jpg" alt="ReliefShield Logo" width="160" style="border-radius: 24px;" />
+</p>
+
 # ReliefShield
 [![CI](https://github.com/NicoleAndreaBolus/Midnight-Andrea/actions/workflows/ci.yml/badge.svg)](https://github.com/NicoleAndreaBolus/Midnight-Andrea/actions/workflows/ci.yml)
 
