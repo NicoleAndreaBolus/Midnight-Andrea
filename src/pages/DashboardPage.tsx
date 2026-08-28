@@ -50,7 +50,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
   const [circuitSuccess, setCircuitSuccess] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
-  const currentContractAddress = 'mn_contract_preprod18x4f92a1c0d5e8b3f7a6c4b2e9d1f0a8b3c5d7e9f1a2b4c6d8e0f';
+  const currentContractAddress = '7ff3da84fceba28bdae68fa8ada604e45bbe191f938873b34857773e1c1e8ec2';
 
   const handleCircuitSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
