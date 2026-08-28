@@ -12,31 +12,31 @@
 | Preprod  | `7ff3da84fceba28bdae68fa8ada604e45bbe191f938873b34857773e1c1e8ec2` |
 | Preview  | `7ff3da84fceba28bdae68fa8ada604e45bbe191f938873b34857773e1c1e8ec2` |
 
-## What This Does
-ReliefShield is a decentralized, zero-knowledge disaster relief and aid management platform that allows donors, relief agencies, and disaster victims to allocate and disburse emergency funds securely on the Midnight Network. Using zero-knowledge proofs generated locally in the browser via the Lace Midnight Wallet DApp Connector, donors can contribute to public emergency relief campaigns and transition contract state without exposing their underlying financial figures, personal identities, or wallet addresses to the public.
+## What This Product Does
+ReliefShield is a decentralized, zero-knowledge smart contract application that solves the transparency-privacy dilemma in humanitarian aid and emergency disaster relief. During major natural disasters (typhoons, floods, earthquakes), donors want absolute mathematical assurance that emergency funds are collected and accounted for, while disaster victims and donors require complete financial and personal privacy against malicious actors and public surveillance.
+
+Built on the Midnight Network, ReliefShield enables charitable donors, government emergency responders, NGOs, and disaster victims to participate in a dual-state aid ecosystem. Donors execute Compact zero-knowledge circuits in their browser via the Midnight Lace Wallet to contribute emergency funds, updating the public relief pool tally in real time without disclosing their wallet addresses, personal wealth, or confidential contribution amounts.
+
+Midnight specifically makes this possible through its dual ledger and private witness model. Unlike transparent blockchains like Ethereum where every donation exposes the donor's entire financial history, Midnight allows local client-side proof generation, ensuring sensitive humanitarian data remains confidential while fund allocations remain 100% auditable.
 
 ## Privacy Model
-- **PUBLIC:**
-  - Public ledger state (`counter`), representing aggregated public relief fund tallies and on-chain verified output metrics.
-  - Contract verification keys and transaction hashes.
-- **PRIVATE:**
-  - Private circuit witness inputs (`secretAmount`), which remain strictly on the user's local device.
-  - Individual donor inputs, secret contribution amounts, and beneficiary tokens.
-- **PROVED without revealing:**
-  - Proves that the state update satisfies Compact circuit rules and arithmetic constraints without disclosing the private witness input value.
-
-## Privacy Claim
-**What an on-chain observer sees:** An observer scanning the Midnight blockchain or indexer sees only valid state transitions, zero-knowledge proofs, and the resulting public ledger counter state.
-
-**What an on-chain observer CANNOT see:** An observer cannot inspect, reverse-engineer, or deduce the donor's private witness input (`secretAmount`), as the private input never leaves the user's browser client and is never written to the blockchain.
+- **What is PUBLIC (on-chain, anyone can see):**
+  - Public ledger state (`counter` / `totalReliefPool`), representing total aggregated relief fund tallies.
+  - Smart contract verification keys, block timestamps, and zero-knowledge proof verification status.
+- **What is PRIVATE (private witness, never on-chain):**
+  - Private circuit witness inputs (`secretAmount`), which remain strictly inside the user's local browser memory.
+  - Donor wallet private keys, personal identities, and transaction history.
+  - Beneficiary aid claim tokens and recipient identity secrets.
+- **What the user PROVES without revealing:**
+  - The user proves that they executed a valid transaction that correctly increments the public relief pool according to Compact circuit arithmetic rules, **without disclosing their private contribution input or wallet identity**.
 
 ## Tech Stack
-Midnight network, Compact, Midnight.js SDK, React/Vite, Lace wallet, GitHub Actions CI/CD
+Midnight Network, Compact Smart Contracts (`>= 0.23`), Midnight.js SDK (`@midnight-ntwrk/dapp-connector-api`), React 18, Vite 5, TypeScript, Tailwind CSS, Lace Midnight Wallet, GitHub Actions CI/CD.
 
 ## Prerequisites
-- Lace Midnight Wallet extension installed in browser
+- Lace Midnight Wallet extension installed in browser (set to Midnight Preprod)
 - Node.js v22+
-- Docker Desktop (for local proof server testing)
+- Docker Desktop (optional, for offline proof server compilation)
 
 ## Setup & Run Locally
 1. **Clone the repository:**
@@ -74,11 +74,14 @@ npm test
 The project features an automated GitHub Actions CI/CD pipeline defined in `.github/workflows/ci.yml`. On every push or pull request to the `main`/`master` branch, the pipeline automatically:
 1. Checks out the code repository.
 2. Configures a Node.js v22 environment.
-3. Downloads and installs the official Compact compiler.
+3. Downloads and installs the official Compact compiler toolchain.
 4. Installs project dependencies (`npm install`).
 5. Compiles Compact smart contracts (`npm run compile`).
-6. Executes the 3+ unit test suite verifying circuit logic, state transitions, and witness privacy (`npm test`).
+6. Executes the complete Vitest test suite (`npm test`).
 7. Builds the production frontend bundle (`npm run build`).
 
-## Product Proposal
-See [PROPOSAL.md](PROPOSAL.md)
+## Usage Guide
+See [docs/USAGE.md](docs/USAGE.md)
+
+## Product X Profile
+[https://x.com/ReliefShield_ZK](https://x.com/ReliefShield_ZK)

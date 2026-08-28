@@ -1,0 +1,29 @@
+pragma language_version >= 0.23;
+
+import CompactStandardLibrary;
+
+/**
+ * PRIVACY MODEL & ARCHITECTURE — RELIEFSHIELD
+ * ===========================================
+ * PUBLIC LEDGER STATE (On-Chain, verifiable by all observers):
+ *   - `totalReliefPool`: Uint<64> - Aggregated public relief pool balance on Midnight.
+ *
+ * PRIVATE WITNESS & INPUTS (Off-Chain, processed strictly inside local browser memory):
+ *   - `secretAmount`: Uint<64> - Donor's private contribution witness input.
+ *
+ * DELIBERATE DISCLOSURE:
+ *   - `disclose(secretAmount)`: Discloses the arithmetic result required to increment
+ *     the public ledger `totalReliefPool` on-chain without revealing donor identity.
+ */
+
+export ledger totalReliefPool: Uint<64>;
+
+// Circuit 1: Donate shielded amount via private witness
+export circuit donateShielded(secretAmount: Uint<64>): [] {
+    totalReliefPool = (totalReliefPool + disclose(secretAmount)) as Uint<64>;
+}
+
+// Circuit 2: Admin reset relief pool
+export circuit resetPool(newValue: Uint<64>): [] {
+    totalReliefPool = disclose(newValue);
+}
