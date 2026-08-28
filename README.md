@@ -88,4 +88,4 @@ The project features an automated GitHub Actions CI/CD pipeline defined in `.git
 See [docs/USAGE.md](docs/USAGE.md)
 
 ## Product X Profile
-[https://x.com/ReliefShield_ZK](https://x.com/ReliefShield_ZK)
+[https://x.com/reliefshieldmai](https://x.com/reliefshieldmai)
