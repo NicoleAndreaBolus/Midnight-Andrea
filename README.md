@@ -9,9 +9,11 @@
 
 ---
 
-## Live Demo
+## Live Demo & Video Demonstration
 - **Production Web DApp**: [https://relief-shield.vercel.app/](https://relief-shield.vercel.app/)
-- **Live Video Walkthrough**: [https://relief-shield.vercel.app/demo](https://relief-shield.vercel.app/)
+- **Demo Video (Lace Wallet Connect + Successful Circuit Call)**: [Watch MP4 Video (docs/screenshots/Recording Success Wallet Connect and Circuit.mp4)](docs/screenshots/Recording%20Success%20Wallet%20Connect%20and%20Circuit.mp4)
+
+https://github.com/NicoleAndreaBolus/Midnight-Andrea/raw/master/docs/screenshots/Recording%20Success%20Wallet%20Connect%20and%20Circuit.mp4
 
 ---
 
