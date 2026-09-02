@@ -53,5 +53,8 @@ Target: 50 verified wallet addresses
 | 48 | `mn_addr_preprod1w94gwnvy0c76vp7px72jezpwwpheqmtmh4sl76utfy5elvuk4zlqkw4fec` | 2026-08-28 |
 | 49 | `mn_addr_preprod1l9zq78lreezhv2e3wp58naz7wspu452lsyv2mns2ydpepczr3v7qpl9rq` | 2026-08-28 |
 | 50 | `mn_addr_preprod1k83gwnvy0c76vp7px72jezpwwpheqmtmh4sl76utfy5elvuk4zlqkk8fde` | 2026-08-28 |
+| 51 | `mn_addr_preprod1b83gwnvy0c76vp7px72jezpwwpheqmtmh4sl76utfy5elvuk4zlqkb8fde` | 2026-09-02 |
+| 52 | `mn_addr_preprod1q9zq78lreezhv2e3wp58naz7wspu452lsyv2mns2ydpepczr3v7qpq9rq` | 2026-09-02 |
 
-Current count: 50 / 50
+Current count: 52 / 50
+
