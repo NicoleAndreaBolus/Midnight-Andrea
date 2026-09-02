@@ -1,7 +1,7 @@
 # User Feedback — Level 5
 
 ## Feedback Collection Method
-Feedback was gathered directly through developer community channels, Discord testing sessions on the Midnight Community Discord, Telegram Web3 testing groups, and direct outreach to fellow Midnight Builder Challenge participants. Testers connected their Midnight Lace wallet on Preprod, executed shielded contribution circuits, and evaluated the dual-mode donation and QR verification handoff.
+Feedback was gathered organically across diverse public community channels, including **Facebook groups (Web3 & Humanitarian Aid networks), Midnight Developer Discord testing sessions, Telegram Web3 testing channels, and Twitter/X outreach**. Testers connected their Midnight Lace wallet on Preprod, executed shielded contribution circuits, and evaluated the dual-mode donation and QR verification handoff.
 
 ---
 
