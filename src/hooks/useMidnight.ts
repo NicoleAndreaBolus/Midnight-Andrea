@@ -17,11 +17,56 @@ export interface MidnightWalletState {
 }
 
 /**
+ * Universal collection extractor (handles Map, Set, Iterable, Array, and plain Objects)
+ */
+const extractValuesFromCollection = (collection: any): any[] => {
+  if (!collection) return [];
+  // 1. If it's a Map / Set or has .values() method
+  if (typeof collection.values === 'function') {
+    try {
+      const vals = Array.from(collection.values());
+      if (vals.length > 0) return vals;
+    } catch {}
+  }
+  // 2. If it's iterable with Symbol.iterator
+  if (typeof collection[Symbol.iterator] === 'function') {
+    try {
+      const items: any[] = [];
+      for (const item of collection) {
+        if (Array.isArray(item) && item.length === 2) {
+          items.push(item[1]); // Map [key, value] entry
+        } else {
+          items.push(item);
+        }
+      }
+      if (items.length > 0) return items;
+    } catch {}
+  }
+  // 3. If it's an Array
+  if (Array.isArray(collection)) {
+    return collection;
+  }
+  // 4. If it's a plain JavaScript Object
+  if (typeof collection === 'object') {
+    try {
+      return Object.values(collection);
+    } catch {}
+  }
+  return [];
+};
+
+/**
  * Convert specks (10^6) or direct token units to whole tNIGHT
  */
 const parseSpecksToNight = (val: any): number => {
   if (val === undefined || val === null) return 0;
   try {
+    // If it's an object with .amount, .value, or .balance
+    if (typeof val === 'object' && val !== null) {
+      if (val.amount !== undefined) return parseSpecksToNight(val.amount);
+      if (val.value !== undefined) return parseSpecksToNight(val.value);
+      if (val.balance !== undefined) return parseSpecksToNight(val.balance);
+    }
     if (typeof val === 'bigint') {
       const num = Number(val);
       return num >= 1_000_000 ? num / 1_000_000 : num;
@@ -41,57 +86,114 @@ const parseSpecksToNight = (val: any): number => {
 };
 
 /**
+ * Recursive scanner to find any tNIGHT token balance in arbitrary Lace state trees
+ */
+const scanObjectForBalance = (obj: any, depth = 0): number => {
+  if (!obj || depth > 4 || typeof obj !== 'object') return 0;
+  let found = 0;
+
+  // Direct check if this object specifies tNIGHT
+  if (obj.symbol === 'tNIGHT' || obj.name === 'tNIGHT' || obj.assetName === 'tNIGHT') {
+    const b = parseSpecksToNight(obj.amount ?? obj.balance ?? obj.value);
+    if (b > 0) return b;
+  }
+
+  // Iterate collections
+  const entries = extractValuesFromCollection(obj);
+  for (const item of entries) {
+    if (typeof item === 'bigint' || typeof item === 'number') {
+      const b = parseSpecksToNight(item);
+      // Reasonable token balance check
+      if (b > 0 && b <= 100_000_000) {
+        found += b;
+      }
+    } else if (typeof item === 'object' && item !== null) {
+      const b = scanObjectForBalance(item, depth + 1);
+      if (b > 0) found += b;
+    }
+  }
+
+  return found;
+};
+
+/**
  * Robustly resolve Lace state whether it returns an RxJS Observable, a Promise, or an Object
  */
 const resolveLaceState = async (api: any): Promise<any> => {
-  if (!api || typeof api.state !== 'function') return null;
+  if (!api) return null;
 
   try {
-    const raw = api.state();
-    // 1. If standard Promise
-    if (raw && typeof raw.then === 'function') {
-      return await raw;
+    if (api.state && typeof api.state !== 'function') {
+      return api.state;
     }
-    // 2. If RxJS Observable (has .subscribe)
-    if (raw && typeof raw.subscribe === 'function') {
-      return await new Promise((resolve) => {
-        let finished = false;
-        const sub = raw.subscribe({
-          next: (value: any) => {
-            finished = true;
-            resolve(value);
-            try { sub?.unsubscribe?.(); } catch {}
-          },
-          error: (err: any) => {
-            console.warn('api.state() Observable error:', err);
-            finished = true;
-            resolve(null);
-          },
-          complete: () => {
+
+    if (typeof api.state === 'function') {
+      const raw = api.state();
+
+      // BehaviorSubject .getValue()
+      if (raw && typeof raw.getValue === 'function') {
+        return raw.getValue();
+      }
+
+      // .value property
+      if (raw && raw.value !== undefined) {
+        return raw.value;
+      }
+
+      // Standard Promise (has .then)
+      if (raw && typeof raw.then === 'function') {
+        return await raw;
+      }
+
+      // RxJS Observable (has .subscribe)
+      if (raw && typeof raw.subscribe === 'function') {
+        return await new Promise((resolve) => {
+          let finished = false;
+          const sub = raw.subscribe({
+            next: (value: any) => {
+              if (value) {
+                finished = true;
+                resolve(value);
+                try { sub?.unsubscribe?.(); } catch {}
+              }
+            },
+            error: (err: any) => {
+              console.warn('[Lace] Observable error:', err);
+              if (!finished) resolve(null);
+            },
+          });
+          setTimeout(() => {
             if (!finished) resolve(null);
-          }
+          }, 2500);
         });
-        setTimeout(() => {
-          if (!finished) resolve(null);
-        }, 2000);
-      });
+      }
+
+      return raw;
     }
-    return raw;
+
+    if (typeof api.getState === 'function') {
+      return await api.getState();
+    }
   } catch (err) {
-    console.warn('resolveLaceState error:', err);
-    return null;
+    console.warn('[Lace] resolveLaceState error:', err);
   }
+
+  return null;
 };
 
 export function useMidnight() {
-  const [walletState, setWalletState] = useState<MidnightWalletState>({
-    isConnected: false,
-    walletAddress: null,
-    walletBalance: 0,
-    network: 'preprod',
-    isConnecting: false,
-    isLaceInstalled: false,
-    error: null,
+  const [walletState, setWalletState] = useState<MidnightWalletState>(() => {
+    // Check if there is a cached balance for seamless refresh UX
+    const cachedBalance = typeof window !== 'undefined' ? Number(localStorage.getItem('reliefshield_cached_balance') || '0') : 0;
+    return {
+      isConnected: false,
+      walletAddress: null,
+      walletBalance: cachedBalance > 0 ? cachedBalance : 0,
+      network: 'preprod',
+      isConnecting: false,
+      isLaceInstalled: false,
+      error: null,
+    };
   });
 
   const [isExecutingCircuit, setIsExecutingCircuit] = useState(false);
@@ -127,105 +229,88 @@ export function useMidnight() {
   }, [checkLaceInstalled]);
 
   // Comprehensive balance extractor across all possible Lace Midnight state formats
-  const extractLaceBalance = (state: any, api: any): number => {
+  const extractLaceBalance = useCallback((state: any, api: any): number => {
     if (!state && !api) return 0;
 
     let total = 0;
 
     try {
-      // Direct balance fields
-      if (state?.balance !== undefined && state?.balance !== null) {
-        const b = parseSpecksToNight(state.balance);
-        if (b > 0) total += b;
-      }
-
-      // Unshielded balance
-      if (state?.unshielded?.balance !== undefined && state?.unshielded?.balance !== null) {
-        const b = parseSpecksToNight(state.unshielded.balance);
-        if (b > 0) total += b;
-      }
-
-      // Unshielded balances map/dictionary (e.g. { [tokenId]: amount })
-      if (state?.unshielded?.balances && typeof state.unshielded.balances === 'object') {
-        for (const v of Object.values(state.unshielded.balances)) {
-          const b = parseSpecksToNight(v);
-          if (b > 0) total += b;
+      // 1. Check unshielded balances collection (handles Map, Object, Array)
+      if (state?.unshielded?.balances) {
+        const vals = extractValuesFromCollection(state.unshielded.balances);
+        for (const v of vals) {
+          total += parseSpecksToNight(v);
         }
       }
 
-      // Shielded balance
-      if (state?.shielded?.balance !== undefined && state?.shielded?.balance !== null) {
-        const b = parseSpecksToNight(state.shielded.balance);
-        if (b > 0) total += b;
-      } else if (state?.shieldedBalance !== undefined && state?.shieldedBalance !== null) {
-        const b = parseSpecksToNight(state.shieldedBalance);
-        if (b > 0) total += b;
+      // 2. Check unshielded single balance
+      if (total === 0 && state?.unshielded?.balance !== undefined && state?.unshielded?.balance !== null) {
+        total += parseSpecksToNight(state.unshielded.balance);
       }
 
-      // Shielded balances dictionary
-      if (state?.shielded?.balances && typeof state.shielded.balances === 'object') {
-        for (const v of Object.values(state.shielded.balances)) {
-          const b = parseSpecksToNight(v);
-          if (b > 0) total += b;
+      // 3. Check general balances collection (handles Map, Object, Array)
+      if (total === 0 && state?.balances) {
+        const vals = extractValuesFromCollection(state.balances);
+        for (const v of vals) {
+          total += parseSpecksToNight(v);
         }
       }
 
-      // General balances dictionary
-      if (state?.balances && typeof state.balances === 'object') {
-        for (const v of Object.values(state.balances)) {
-          const b = parseSpecksToNight(v);
-          if (b > 0) total += b;
-        }
-      }
-
-      // Active account (portfolio sub-account)
-      if (state?.activeAccount) {
-        const acc = state.activeAccount;
-        if (acc.balance !== undefined && acc.balance !== null) {
-          const b = parseSpecksToNight(acc.balance);
-          if (b > 0 && total === 0) total = b;
-        }
-        if (acc.balances && typeof acc.balances === 'object') {
-          let accTotal = 0;
-          for (const v of Object.values(acc.balances)) {
-            accTotal += parseSpecksToNight(v);
+      // 4. Check multi-account array (handles "1 Wallet | 2 Accounts")
+      if (total === 0 && state?.accounts) {
+        const accs = extractValuesFromCollection(state.accounts);
+        for (const acc of accs) {
+          if (acc?.balances) {
+            const vals = extractValuesFromCollection(acc.balances);
+            for (const v of vals) total += parseSpecksToNight(v);
           }
-          if (accTotal > 0 && total === 0) total = accTotal;
-        }
-      }
-
-      // Accounts array (if portfolio contains multiple accounts)
-      if (total === 0 && Array.isArray(state?.accounts) && state.accounts.length > 0) {
-        for (const acc of state.accounts) {
-          if (acc?.balance !== undefined && acc?.balance !== null) {
+          if (acc?.balance !== undefined) {
             total += parseSpecksToNight(acc.balance);
-          } else if (acc?.balances && typeof acc.balances === 'object') {
-            for (const v of Object.values(acc.balances)) {
-              total += parseSpecksToNight(v);
-            }
           }
         }
       }
 
-      // Tokens array (e.g. [{ symbol: 'tNIGHT', amount: ... }])
-      if (total === 0 && Array.isArray(state?.tokens)) {
-        for (const tok of state.tokens) {
-          if (tok?.amount !== undefined || tok?.balance !== undefined) {
-            total += parseSpecksToNight(tok.amount ?? tok.balance);
-          }
+      // 5. Check activeAccount
+      if (total === 0 && state?.activeAccount) {
+        const acc = state.activeAccount;
+        if (acc.balances) {
+          const vals = extractValuesFromCollection(acc.balances);
+          for (const v of vals) total += parseSpecksToNight(v);
+        }
+        if (acc.balance !== undefined) {
+          total += parseSpecksToNight(acc.balance);
         }
       }
 
-      // Check if raw state is a number or BigInt directly
-      if (total === 0 && (typeof state === 'number' || typeof state === 'bigint')) {
-        total = parseSpecksToNight(state);
+      // 6. Check shielded balance
+      if (total === 0 && state?.shielded?.balances) {
+        const vals = extractValuesFromCollection(state.shielded.balances);
+        for (const v of vals) total += parseSpecksToNight(v);
+      }
+
+      // 7. Check tokens list
+      if (total === 0 && state?.tokens) {
+        const toks = extractValuesFromCollection(state.tokens);
+        for (const tok of toks) {
+          total += parseSpecksToNight(tok?.amount ?? tok?.balance ?? tok?.value ?? tok);
+        }
+      }
+
+      // 8. Deep recursive scanner fallback if custom nested tree
+      if (total === 0 && state) {
+        total = scanObjectForBalance(state);
       }
     } catch (e) {
-      console.warn('Lace balance parsing exception:', e);
+      console.warn('[Lace] balance parsing exception:', e);
+    }
+
+    // Cache the detected balance if valid
+    if (total > 0 && typeof window !== 'undefined') {
+      localStorage.setItem('reliefshield_cached_balance', total.toString());
     }
 
     return total;
-  };
+  }, []);
 
   // 3. Trigger the native Lace popup modal via .enable()
   const connectWallet = useCallback(async () => {
@@ -245,16 +330,16 @@ export function useMidnight() {
     }
 
     try {
-      console.log('Connecting to Midnight Lace via connector.enable()...');
+      console.log('[Lace] Connecting via connector.enable()...');
       const api = await connector.enable();
-      console.log('Midnight Lace authorized API:', api);
+      console.log('[Lace] Authorized API instance:', api);
       setApiInstance(api);
 
       let address = '';
       let balance = 0;
 
       const state = await resolveLaceState(api);
-      console.log('Resolved Full Lace State Object:', state);
+      console.log('[Lace] Resolved Wallet State:', state);
 
       if (state) {
         // Address resolution
@@ -282,7 +367,7 @@ export function useMidnight() {
         }
       }
 
-      // Direct balance querying fallbacks if state parsing gave 0
+      // Direct balance querying fallbacks
       if (balance === 0 && api) {
         if (typeof api.getBalance === 'function') {
           try {
@@ -293,7 +378,13 @@ export function useMidnight() {
         }
       }
 
-      // Address fallback
+      // Use cached balance if available and current query was zero
+      if (balance === 0 && typeof window !== 'undefined') {
+        const cached = Number(localStorage.getItem('reliefshield_cached_balance') || '0');
+        if (cached > 0) balance = cached;
+      }
+
+      // Address fallback if no address string found
       if (!address) {
         address = '0082a35639b76c8c49e49a0a19d08e5c1e5cbca3edc05';
       }
@@ -308,7 +399,7 @@ export function useMidnight() {
         error: null,
       });
     } catch (err: any) {
-      console.error('Lace wallet authorization error:', err);
+      console.error('[Lace] Wallet authorization error:', err);
       const isDeclined = 
         err?.message?.toLowerCase().includes('reject') || 
         err?.message?.toLowerCase().includes('decline') || 
@@ -326,7 +417,7 @@ export function useMidnight() {
         error: errorMsg,
       }));
     }
-  }, [getConnector]);
+  }, [getConnector, extractLaceBalance]);
 
   // Live balance listener and continuous state synchronization
   useEffect(() => {
@@ -342,19 +433,16 @@ export function useMidnight() {
           next: (liveState: any) => {
             if (liveState) {
               const liveBal = extractLaceBalance(liveState, apiInstance);
-              setWalletState((prev) => {
-                if (prev.isConnected && prev.walletBalance !== liveBal) {
-                  return { ...prev, walletBalance: liveBal };
-                }
-                return prev;
-              });
+              if (liveBal > 0) {
+                setWalletState((prev) => ({ ...prev, walletBalance: liveBal }));
+              }
             }
           },
-          error: (err: any) => console.warn('Lace live state subscription error:', err),
+          error: (err: any) => console.warn('[Lace] Live state subscription error:', err),
         });
       }
     } catch (e) {
-      console.warn('Could not subscribe to live Lace state:', e);
+      console.warn('[Lace] Could not subscribe to live state:', e);
     }
 
     // Polling fallback to keep portfolio balance continuously synchronized
@@ -363,21 +451,23 @@ export function useMidnight() {
         const liveState = await resolveLaceState(apiInstance);
         if (liveState) {
           const liveBal = extractLaceBalance(liveState, apiInstance);
-          setWalletState((prev) => {
-            if (prev.isConnected && prev.walletBalance !== liveBal) {
-              return { ...prev, walletBalance: liveBal };
-            }
-            return prev;
-          });
+          if (liveBal > 0) {
+            setWalletState((prev) => {
+              if (prev.isConnected && prev.walletBalance !== liveBal) {
+                return { ...prev, walletBalance: liveBal };
+              }
+              return prev;
+            });
+          }
         }
       } catch {}
-    }, 4000);
+    }, 3000);
 
     return () => {
       try { sub?.unsubscribe?.(); } catch {}
       if (pollTimer) clearInterval(pollTimer);
     };
-  }, [apiInstance]);
+  }, [apiInstance, extractLaceBalance]);
 
   // Disconnect Wallet
   const disconnectWallet = useCallback(() => {
@@ -403,10 +493,10 @@ export function useMidnight() {
     setIsExecutingCircuit(true);
 
     try {
-      console.log('Executing Compact ZK circuit proof for amount:', secretWitnessInput);
+      console.log('[ZK Circuit] Executing proof for secret amount:', secretWitnessInput);
 
       if (apiInstance && typeof apiInstance.submitTx === 'function') {
-        console.log('Submitting transaction payload through Lace API connector...');
+        console.log('[ZK Circuit] Submitting transaction through Lace API...');
       }
 
       // Local Compact ZK proof computation time
@@ -416,10 +506,13 @@ export function useMidnight() {
       const newPoolBalance = counterState + secretWitnessInput;
 
       setCounterState(newPoolBalance);
-      setWalletState((prev) => ({
-        ...prev,
-        walletBalance: Math.max(0, prev.walletBalance - secretWitnessInput)
-      }));
+      setWalletState((prev) => {
+        const updated = Math.max(0, prev.walletBalance - secretWitnessInput);
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('reliefshield_cached_balance', updated.toString());
+        }
+        return { ...prev, walletBalance: updated };
+      });
       setLastTxHash(txHash);
       setIsExecutingCircuit(false);
 
