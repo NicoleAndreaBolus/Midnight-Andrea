@@ -94,7 +94,7 @@ export const ShieldedDonation: React.FC<ShieldedDonationProps> = ({
           <div className="flex items-center justify-between">
             <label className="text-xs font-bold text-[#1C1917]">Shielded Amount ($tNIGHT)</label>
             <span className="text-[11px] text-[#78716C] font-mono">
-              Available: ${walletBalance.toLocaleString()} tNIGHT
+              Available: {walletBalance.toLocaleString()} tNIGHT
             </span>
           </div>
           <input

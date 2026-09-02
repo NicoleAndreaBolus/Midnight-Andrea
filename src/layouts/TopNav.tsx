@@ -98,7 +98,7 @@ export const TopNav: React.FC<TopNavProps> = ({
           <div className="flex items-center gap-2">
             <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 font-mono text-xs font-bold">
               <Coins className="w-3.5 h-3.5 text-emerald-600" />
-              <span>${walletBalance.toLocaleString()} tNIGHT</span>
+              <span>{walletBalance.toLocaleString()} tNIGHT</span>
             </div>
 
             <div className="px-3 py-1.5 rounded-xl bg-amber-100/80 border border-amber-200 text-xs font-mono font-semibold text-amber-950 flex items-center gap-1.5">

@@ -103,7 +103,7 @@ export const ReliefShieldLanding: React.FC<ReliefShieldLandingProps> = ({
                 {/* Account Balance Pill */}
                 <div className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 font-mono text-xs font-bold">
                   <Coins className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>${walletBalance.toLocaleString()} tNIGHT</span>
+                  <span>{walletBalance.toLocaleString()} tNIGHT</span>
                 </div>
 
                 {/* Wallet Address Snippet */}
