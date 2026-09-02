@@ -24,8 +24,8 @@
 ---
 
 ## User Feedback & Onboarding Resources
-- **User Feedback Google Form**: [https://forms.gle/ReliefShieldPreprodFeedback](https://forms.gle/ReliefShieldPreprodFeedback)
-- **Public Responses Excel / Google Sheet**: [https://docs.google.com/spreadsheets/d/1eReliefShield_Preprod_User_Responses_v4/edit?usp=sharing](https://docs.google.com/spreadsheets/d/1eReliefShield_Preprod_User_Responses_v4/edit?usp=sharing)
+- **User Feedback Google Form**: [https://docs.google.com/forms/d/e/1FAIpQLSfwc7RIntIgom4e26tuimplxD8BDNE5Busb1uWlWlO2y3LBeA/viewform](https://docs.google.com/forms/d/e/1FAIpQLSfwc7RIntIgom4e26tuimplxD8BDNE5Busb1uWlWlO2y3LBeA/viewform)
+- **Public Responses Excel / Google Sheet**: [https://docs.google.com/spreadsheets/d/15N2fwOt7oG_15nAdvVX93dROlNrJEmTb6dVQvwYEMdc/edit?usp=sharing](https://docs.google.com/spreadsheets/d/15N2fwOt7oG_15nAdvVX93dROlNrJEmTb6dVQvwYEMdc/edit?usp=sharing)
 - **Archived Form Response Dataset (CSV)**: [docs/user-feedback-responses.csv](docs/user-feedback-responses.csv)
 - **Detailed User Feedback Log & Analysis**: [docs/FEEDBACK.md](docs/FEEDBACK.md)
 - **Preprod Verified Wallets Directory**: [USERS.md](USERS.md)
@@ -263,5 +263,5 @@ Regular development and community updates published across our official channels
 > 🔗 Posted on [@reliefshieldmai](https://x.com/reliefshieldmai) | 💬 67 Retweets, 115 Likes
 
 ### 📢 Update #4: Mainnet Roadmap & Compact Contract Formal Audit (September 2, 2026)
-> *"Heading into Level 5! Our Compact smart contract (`reliefshield.compact`) is verified across Preprod & Preview. Review our full dataset of 50+ user responses and audit proof on our public sheet: https://docs.google.com/spreadsheets/d/1eReliefShield_Preprod_User_Responses_v4/edit?usp=sharing"*  
+> *"Heading into Level 5! Our Compact smart contract (`reliefshield.compact`) is verified across Preprod & Preview. Review our full dataset of 50+ user responses and audit proof on our public sheet: https://docs.google.com/spreadsheets/d/15N2fwOt7oG_15nAdvVX93dROlNrJEmTb6dVQvwYEMdc/edit?usp=sharing"*  
 > 🔗 Posted on [@reliefshieldmai](https://x.com/reliefshieldmai) | 💬 83 Retweets, 142 Likes
